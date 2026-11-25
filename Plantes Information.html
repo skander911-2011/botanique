@@ -1,0 +1,2638 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botanique &amp; Anatomie des Plantes - Mohamed Skander Azzabi</title>
+
+    <!-- Favicon SVG Pousse de Plante -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Plus Jakarta Sans & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                    colors: {
+                        sage: {
+                            50: '#eef7ef',
+                            100: '#d7ecd9',
+                            200: '#b4dcb8',
+                            300: '#84c58c',
+                            400: '#53a65e',
+                            500: '#35883f',
+                            600: '#276b30',
+                            700: '#1e5426',
+                            800: '#18421f',
+                            900: '#133519',
+                        },
+                        forest: {
+                            950: '#091811',  /* Fond Forêt Nocturne profond */
+                            900: '#11261c',  /* Cartes Forêt Nocturne */
+                            800: '#193729',  /* Bordures & Survols Nocturnes */
+                            700: '#244d3a',
+                        },
+                        cream: {
+                            50: '#fcfaf2',
+                            100: '#f5f0e1',
+                            200: '#e6dec8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Animations d'apparition au défilement */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Effet lumineux sur les points et zones du schéma anatomique */
+        .hotspot-ring {
+            transition: all 0.25s ease;
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+        .hotspot-group:hover .hotspot-ring,
+        .hotspot-group.active .hotspot-ring {
+            transform: scale(1.26);
+            filter: drop-shadow(0 0 9px rgba(16, 185, 129, 0.9));
+        }
+        .hotspot-pulse {
+            animation: pulseGlow 2.4s infinite ease-in-out;
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 0.55; }
+            50% { transform: scale(1.48); opacity: 0; }
+        }
+
+        /* Surlignage dynamique de l'organe sur le dessin SVG */
+        .organ-shape {
+            transition: filter 0.3s ease, opacity 0.3s ease;
+        }
+        .organ-shape.highlighted {
+            filter: drop-shadow(0 0 10px #10b981) brightness(1.12);
+        }
+
+        /* Particules de confettis pour la fin du Quiz */
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 14px;
+            border-radius: 3px;
+            animation: confettiFall 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        /* Animation Confettis fin de Quiz */
+        @keyframes confettiFall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(340px) rotate(720deg); opacity: 0; }
+        }
+    </style>
+
+    <!-- Application immédiate du thème sauvegardé (uniquement si les cookies de préférences sont autorisés) -->
+    <script>
+        (function() {
+            const match = document.cookie.match(/(?:^|; )skander_botanique_consent=([^;]*)/);
+            let allowPrefs = true;
+            if (match) {
+                try {
+                    const parsed = JSON.parse(decodeURIComponent(match[1]));
+                    allowPrefs = !!parsed.preferences;
+                } catch (e) {
+                    allowPrefs = false;
+                }
+            }
+            if (allowPrefs && localStorage.getItem('botanica_theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+</head>
+<body class="bg-sage-50 dark:bg-forest-950 text-slate-800 dark:text-cream-50 font-sans antialiased selection:bg-emerald-600 selection:text-white flex flex-col min-h-screen transition-colors duration-300">
+
+    <!-- ================= BARRE DE PROGRESSION DE LECTURE ================= -->
+    <div class="fixed top-0 left-0 right-0 h-1 z-50 bg-transparent pointer-events-none">
+        <div id="reading-progress" class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-lime-400 transition-all duration-100" style="width: 0%"></div>
+    </div>
+
+    <!-- ================= HEADER / NAVIGATION GLASSMORPHISM ================= -->
+    <header class="sticky top-0 z-40 bg-white/80 dark:bg-forest-950/85 backdrop-blur-xl border-b border-sage-200/80 dark:border-forest-800 shadow-sm transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <!-- Logo -->
+                <a href="#accueil" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-sage-700 text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform text-xl">
+                        🌱
+                    </div>
+                    <div>
+                        <span class="font-bold text-base sm:text-lg text-sage-900 dark:text-cream-50 tracking-tight block leading-none">
+                            Botanique &amp; Anatomie
+                        </span>
+                        <span class="text-[11px] text-sage-600 dark:text-emerald-400 font-semibold">
+                            Encyclopédie Interactive
+                        </span>
+                    </div>
+                </a>
+
+                <!-- Liens Navigation Desktop -->
+                <nav class="hidden lg:flex items-center space-x-6">
+                    <a href="#accueil" class="text-sm font-semibold text-slate-700 dark:text-cream-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition">Accueil</a>
+                    <a href="#anatomie" class="text-sm font-semibold text-slate-700 dark:text-cream-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition">Schéma Anatomique</a>
+                    <a href="#plantes" class="text-sm font-semibold text-slate-700 dark:text-cream-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition">Nos Plantes (10)</a>
+                    <a href="#sos-plante" class="text-sm font-semibold text-slate-700 dark:text-cream-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition">SOS Plante</a>
+                    <a href="#quiz" class="text-sm font-semibold text-slate-700 dark:text-cream-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition">Quiz</a>
+                </nav>
+
+                <!-- Contrôles droite : Favoris rapides + Thème Forêt Nocturne + Menu Mobile -->
+                <div class="flex items-center gap-2 sm:gap-2.5">
+                    <a href="#plantes" onclick="activateFavoritesFilter()" title="Voir mes plantes favorites"
+                        class="px-3 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800/70 text-rose-600 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-xs font-bold flex items-center gap-1.5 transition">
+                        <i class="ph-fill ph-heart text-base"></i>
+                        <span id="nav-fav-count">0</span>
+                    </a>
+
+                    <button id="theme-toggle" aria-label="Basculer le thème Forêt Nocturne"
+                        class="px-3.5 py-2 rounded-xl bg-sage-100/90 dark:bg-forest-900 border border-sage-200 dark:border-forest-700 text-sage-900 dark:text-cream-100 hover:bg-sage-200 dark:hover:bg-forest-800 text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm transition cursor-pointer">
+                        <i id="theme-icon" class="ph-fill ph-moon-stars text-base text-sage-700 dark:text-emerald-400"></i>
+                        <span id="theme-label" class="hidden sm:inline">Thème Forêt Nocturne</span>
+                    </button>
+
+                    <button id="mobile-menu-btn" aria-label="Ouvrir le menu" class="lg:hidden p-2.5 rounded-xl bg-white/80 dark:bg-forest-900 border border-sage-200 dark:border-forest-800 text-sage-900 dark:text-cream-50 hover:bg-sage-100 dark:hover:bg-forest-800">
+                        <i class="ph ph-list text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Mobile Déroulant -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white/95 dark:bg-forest-950/95 backdrop-blur-xl border-b border-sage-200 dark:border-forest-800 px-4 pt-2 pb-5 space-y-1.5 shadow-xl">
+            <a href="#accueil" class="block px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-cream-100 hover:bg-sage-100 dark:hover:bg-forest-900">Accueil</a>
+            <a href="#anatomie" class="block px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-cream-100 hover:bg-sage-100 dark:hover:bg-forest-900">Schéma Anatomique</a>
+            <a href="#plantes" class="block px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-cream-100 hover:bg-sage-100 dark:hover:bg-forest-900">Nos Plantes (10)</a>
+            <a href="#sos-plante" class="block px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-cream-100 hover:bg-sage-100 dark:hover:bg-forest-900">SOS Plante (Diagnostic)</a>
+            <a href="#quiz" class="block px-4 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 text-white text-center mt-2 shadow-sm">Lancer le Quiz (8 questions)</a>
+        </div>
+    </header>
+
+    <!-- ================= SECTION HÉROÏQUE + PLANTE DU JOUR ================= -->
+    <section id="accueil" class="relative overflow-hidden py-12 md:py-20 bg-gradient-to-b from-white via-sage-50 to-sage-100/70 dark:from-forest-900 dark:via-forest-950 dark:to-forest-950 border-b border-sage-200/80 dark:border-forest-800 transition-colors duration-300">
+        <!-- Halos décoratifs -->
+        <div class="absolute -top-32 -right-24 w-[28rem] h-[28rem] bg-emerald-300/25 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] bg-sage-400/20 dark:bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center reveal">
+
+                <!-- Colonne Gauche : Titre emblématique & Actions -->
+                <div class="lg:col-span-7 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-forest-900/90 border border-sage-200 dark:border-forest-700 text-sage-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider mb-5 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Plateforme Éducative de Botanique
+                    </div>
+
+                    <!-- Titre emblématique conservé -->
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-sage-800 dark:text-cream-50 tracking-tight mb-5 leading-tight">
+                        Bienvenue dans la page d'accueil
+                    </h1>
+
+                    <p class="text-base sm:text-lg text-slate-600 dark:text-cream-200 leading-relaxed mb-7 max-w-2xl mx-auto lg:mx-0">
+                        Explorez la structure secrète des végétaux sur notre schéma interactif zoomable, comparez 10 espèces fascinantes, diagnostiquez vos plantes et testez vos connaissances.
+                    </p>
+
+                    <!-- Badges de stats -->
+                    <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 mb-8">
+                        <span class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white dark:bg-forest-900 border border-sage-200 dark:border-forest-800 text-xs font-bold text-slate-700 dark:text-cream-100 shadow-sm">
+                            <i class="ph-fill ph-plant text-emerald-600 dark:text-emerald-400 text-base"></i>
+                            11 organes anatomiques
+                        </span>
+                        <span class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white dark:bg-forest-900 border border-sage-200 dark:border-forest-800 text-xs font-bold text-slate-700 dark:text-cream-100 shadow-sm">
+                            <i class="ph-fill ph-flower-lotus text-emerald-600 dark:text-emerald-400 text-base"></i>
+                            10 espèces &amp; Comparateur
+                        </span>
+                        <span class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white dark:bg-forest-900 border border-sage-200 dark:border-forest-800 text-xs font-bold text-slate-700 dark:text-cream-100 shadow-sm">
+                            <i class="ph-fill ph-trophy text-amber-500 text-base"></i>
+                            Record Quiz : <span id="hero-best-score">0/8</span>
+                        </span>
+                    </div>
+
+                    <!-- Boutons d'action -->
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5">
+                        <a href="#anatomie" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/20 hover:shadow-emerald-500/30 transition flex items-center justify-center gap-2.5">
+                            <i class="ph-bold ph-magnifying-glass-plus text-lg"></i>
+                            Explorer le schéma
+                        </a>
+                        <a href="#quiz" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-white dark:bg-forest-900 text-sage-900 dark:text-cream-50 border border-sage-300 dark:border-forest-700 hover:bg-sage-100 dark:hover:bg-forest-800 font-bold shadow-sm transition flex items-center justify-center gap-2.5">
+                            <i class="ph-bold ph-play-circle text-lg text-emerald-600 dark:text-emerald-400"></i>
+                            Lancer le Quiz
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Colonne Droite : Mini-carte interactive "Plante du jour" -->
+                <div class="lg:col-span-5">
+                    <div class="bg-white/90 dark:bg-forest-900/90 backdrop-blur-md rounded-3xl border border-sage-200 dark:border-forest-700 p-5 shadow-xl relative overflow-hidden">
+                        <div class="flex items-center justify-between gap-2 mb-3.5">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 text-xs font-extrabold uppercase tracking-wider">
+                                <i class="ph-fill ph-sparkle"></i> Plante du jour
+                            </span>
+                            <button onclick="pickRandomPlantOfDay()" title="Découvrir une autre plante aléatoire"
+                                class="px-3 py-1.5 rounded-xl bg-sage-100 dark:bg-forest-800 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 text-sage-800 dark:text-cream-100 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
+                                <i class="ph-bold ph-shuffle"></i> Autre plante
+                            </button>
+                        </div>
+
+                        <div id="potd-card" class="group cursor-pointer">
+                            <div class="h-48 rounded-2xl overflow-hidden bg-sage-100 dark:bg-forest-950 relative mb-4">
+                                <img id="potd-img" src="" alt="Plante du jour" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent"></div>
+                                <div class="absolute bottom-3 left-4 right-4 flex items-end justify-between text-white">
+                                    <div>
+                                        <p id="potd-latin" class="text-xs italic font-serif text-emerald-200"></p>
+                                        <h3 id="potd-name" class="font-serif text-2xl font-bold leading-tight"></h3>
+                                    </div>
+                                    <span id="potd-cat" class="px-2.5 py-1 rounded-full bg-emerald-600/90 text-[11px] font-bold"></span>
+                                </div>
+                            </div>
+
+                            <p id="potd-desc" class="text-xs sm:text-sm text-slate-600 dark:text-cream-200 line-clamp-2 mb-4"></p>
+
+                            <div class="flex items-center justify-between pt-3 border-t border-sage-100 dark:border-forest-800">
+                                <div class="flex items-center gap-3 text-xs font-semibold text-slate-600 dark:text-cream-200">
+                                    <span id="potd-water-icons" class="flex items-center gap-0.5 text-sky-500" title="Besoin en eau"></span>
+                                    <span id="potd-light-icons" class="flex items-center gap-0.5 text-amber-500" title="Besoin en lumière"></span>
+                                </div>
+                                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                    Ouvrir la fiche <i class="ph-bold ph-arrow-right"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= SECTION SCHÉMA ANATOMIQUE INTERACTIF (ZOOM + MODE RÉVISION) ================= -->
+    <section id="anatomie" class="py-16 md:py-24 bg-white dark:bg-forest-950 border-b border-sage-200/80 dark:border-forest-800 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 reveal">
+                <div>
+                    <span class="text-emerald-600 dark:text-emerald-400 font-bold text-xs uppercase tracking-widest">
+                        Organisation Végétale Interactive
+                    </span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-slate-900 dark:text-cream-50 mt-1">
+                        Anatomie Détaillée : Les Bases
+                    </h2>
+                    <p class="text-slate-600 dark:text-cream-200 mt-2 max-w-2xl text-sm sm:text-base">
+                        Explorez les 11 organes répartis entre le <strong>système caulinaire/foliacé</strong> et le <strong>système radiculaire</strong>. Activez le <em>Mode Révision</em> pour tester votre mémoire !
+                    </p>
+                </div>
+
+                <!-- Bouton Mode Révision (Masquer les noms) -->
+                <button id="revision-mode-btn" onclick="toggleRevisionMode()"
+                    class="self-start md:self-auto px-5 py-3 rounded-2xl bg-amber-100 dark:bg-amber-950/70 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-900/70 font-bold text-xs sm:text-sm flex items-center gap-2.5 shadow-sm transition cursor-pointer">
+                    <i id="revision-icon" class="ph-bold ph-eye-slash text-lg"></i>
+                    <span id="revision-label">Mode Révision (Masquer les noms)</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start reveal">
+
+                <!-- Colonne Gauche : Schéma SVG Zoomable -->
+                <div class="lg:col-span-7 bg-sage-50/90 dark:bg-forest-900/90 rounded-3xl border border-sage-200 dark:border-forest-800 p-4 sm:p-6 shadow-sm">
+                    <!-- Barre d'outils au-dessus du SVG : Badges Systèmes + Contrôles de Zoom -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <div class="flex flex-wrap gap-2 text-xs font-bold">
+                            <span class="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/90 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                ☀️ Système caulinaire / foliacé
+                            </span>
+                            <span class="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/70 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
+                                🌱 Système radiculaire
+                            </span>
+                        </div>
+
+                        <!-- Contrôles Zoom (+ / - / Réinitialiser) -->
+                        <div class="flex items-center gap-1.5 bg-white dark:bg-forest-950 p-1 rounded-xl border border-sage-200 dark:border-forest-700 shadow-sm">
+                            <button onclick="zoomSvg(-0.15)" title="Dézoomer" aria-label="Dézoomer"
+                                class="w-8 h-8 rounded-lg hover:bg-sage-100 dark:hover:bg-forest-800 flex items-center justify-center text-slate-700 dark:text-cream-100 transition cursor-pointer">
+                                <i class="ph-bold ph-minus"></i>
+                            </button>
+                            <span id="zoom-level-text" class="px-2 text-xs font-extrabold text-slate-700 dark:text-cream-200 min-w-[3.2rem] text-center">100%</span>
+                            <button onclick="zoomSvg(0.15)" title="Zoomer" aria-label="Zoomer"
+                                class="w-8 h-8 rounded-lg hover:bg-sage-100 dark:hover:bg-forest-800 flex items-center justify-center text-slate-700 dark:text-cream-100 transition cursor-pointer">
+                                <i class="ph-bold ph-plus"></i>
+                            </button>
+                            <button onclick="resetSvgZoom()" title="Réinitialiser le zoom" aria-label="Réinitialiser le zoom"
+                                class="px-2.5 h-8 rounded-lg bg-sage-100 dark:bg-forest-800 hover:bg-emerald-600 hover:text-white text-xs font-bold text-slate-700 dark:text-cream-100 transition cursor-pointer">
+                                Réinitialiser
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Conteneur de défilement pour le zoom SVG -->
+                    <div class="w-full overflow-auto rounded-2xl border border-sage-200/70 dark:border-forest-800 bg-white/60 dark:bg-forest-950/60 max-h-[670px]">
+                        <div id="svg-zoom-wrapper" class="w-full max-w-xl mx-auto origin-top transition-transform duration-200" style="transform: scale(1);">
+                            <svg viewBox="0 0 540 650" class="w-full h-auto select-none" role="img" aria-label="Schéma anatomique interactif complet d'une plante">
+                                <!-- Zones ciel et terre -->
+                                <rect x="16" y="10" width="508" height="380" rx="18" fill="#f3faf4" />
+                                <rect x="16" y="390" width="508" height="250" rx="18" fill="#e8d6c3" />
+
+                                <!-- Surface du sol -->
+                                <line x1="16" y1="390" x2="524" y2="390" stroke="#7f4f24" stroke-width="3.5" stroke-dasharray="8 4" />
+                                <text x="30" y="380" fill="#276b30" font-size="11" font-weight="800" letter-spacing="0.5">SURFACE DU SOL</text>
+
+                                <!-- Accolades des 2 grands systèmes -->
+                                <path d="M 476 28 L 488 28 L 488 380 L 476 380" fill="none" stroke="#276b30" stroke-width="2.5" stroke-linecap="round" />
+                                <text x="504" y="204" fill="#1e5426" font-size="11" font-weight="800" transform="rotate(90 504,204)" text-anchor="middle" letter-spacing="0.8">SYSTÈME CAULINAIRE</text>
+
+                                <path d="M 476 400 L 488 400 L 488 625 L 476 625" fill="none" stroke="#7f4f24" stroke-width="2.5" stroke-linecap="round" />
+                                <text x="504" y="512" fill="#582f0e" font-size="11" font-weight="800" transform="rotate(90 504,512)" text-anchor="middle" letter-spacing="0.8">SYSTÈME RADICULAIRE</text>
+
+                                <!-- SYSTÈME RADICULAIRE -->
+                                <!-- 10. Racine pivotante -->
+                                <g id="shape-racine_pivotante" class="organ-shape">
+                                    <path d="M 263 390 Q 267 485 264 606 L 274 606 Q 277 485 277 390 Z" fill="#b07d4f" stroke="#6f4518" stroke-width="1.5" />
+                                    <path d="M 265 425 Q 205 442 155 480" fill="none" stroke="#8c5a32" stroke-width="3.5" stroke-linecap="round" />
+                                    <path d="M 210 444 Q 188 470 172 502" fill="none" stroke="#8c5a32" stroke-width="2" stroke-linecap="round" />
+                                    <path d="M 275 445 Q 335 462 385 505" fill="none" stroke="#8c5a32" stroke-width="3.5" stroke-linecap="round" />
+                                    <path d="M 330 465 Q 352 495 368 530" fill="none" stroke="#8c5a32" stroke-width="2" stroke-linecap="round" />
+                                    <path d="M 266 500 Q 215 528 178 575" fill="none" stroke="#8c5a32" stroke-width="3" stroke-linecap="round" />
+                                    <path d="M 273 530 Q 318 558 350 595" fill="none" stroke="#8c5a32" stroke-width="2.5" stroke-linecap="round" />
+                                </g>
+
+                                <!-- 11a. Poils absorbants -->
+                                <g id="shape-poils_absorbants" class="organ-shape" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round">
+                                    <line x1="188" y1="458" x2="180" y2="447" />
+                                    <line x1="176" y1="466" x2="166" y2="457" />
+                                    <line x1="199" y1="452" x2="193" y2="440" />
+                                    <line x1="350" y1="478" x2="361" y2="467" />
+                                    <line x1="362" y1="487" x2="374" y2="478" />
+                                    <line x1="210" y1="538" x2="198" y2="530" />
+                                    <line x1="198" y1="549" x2="186" y2="542" />
+                                </g>
+
+                                <!-- 11b. Coiffe -->
+                                <g id="shape-coiffe" class="organ-shape">
+                                    <path d="M 262 603 Q 269 625 276 603 Z" fill="#432818" />
+                                </g>
+
+                                <!-- SYSTÈME CAULINAIRE -->
+                                <!-- 8. Tige -->
+                                <g id="shape-tige" class="organ-shape">
+                                    <rect x="264" y="102" width="12" height="288" rx="4" fill="#35883f" stroke="#1e5426" stroke-width="1.5" />
+                                    <line x1="270" y1="115" x2="270" y2="385" stroke="#85c48c" stroke-width="2" stroke-dasharray="4 3" />
+                                </g>
+
+                                <!-- 9. Collet -->
+                                <g id="shape-collet" class="organ-shape">
+                                    <ellipse cx="270" cy="390" rx="14" ry="6" fill="#8c5a32" stroke="#432818" stroke-width="1.5" />
+                                </g>
+
+                                <!-- 7. Nœuds -->
+                                <g id="shape-noeud" class="organ-shape">
+                                    <circle cx="270" cy="320" r="4.5" fill="#18421f" />
+                                    <circle cx="270" cy="270" r="4.5" fill="#18421f" />
+                                    <circle cx="270" cy="175" r="4.5" fill="#18421f" />
+                                </g>
+
+                                <!-- 6. Entre-nœud -->
+                                <g id="shape-entre_noeud" class="organ-shape">
+                                    <path d="M 284 177 L 292 177 L 292 268 L 284 268" fill="none" stroke="#1e5426" stroke-width="2.2" />
+                                </g>
+
+                                <!-- 5. Pétiole -->
+                                <g id="shape-petiole" class="organ-shape">
+                                    <path d="M 264 320 Q 232 308 205 302" fill="none" stroke="#276b30" stroke-width="4.5" stroke-linecap="round" />
+                                    <path d="M 276 270 Q 308 255 335 248" fill="none" stroke="#276b30" stroke-width="4" stroke-linecap="round" />
+                                    <path d="M 276 175 Q 302 160 324 154" fill="none" stroke="#276b30" stroke-width="3.5" stroke-linecap="round" />
+                                </g>
+
+                                <!-- 4. Limbe -->
+                                <g id="shape-limbe" class="organ-shape">
+                                    <path d="M 205 302 C 155 270, 105 292, 100 330 C 138 352, 188 335, 205 302 Z" fill="#55a65e" stroke="#1e5426" stroke-width="1.5" />
+                                    <path d="M 205 302 Q 155 312 112 326" fill="none" stroke="#1e5426" stroke-width="1.2" />
+
+                                    <path d="M 335 248 C 385 216, 435 238, 440 276 C 402 298, 352 280, 335 248 Z" fill="#55a65e" stroke="#1e5426" stroke-width="1.5" />
+                                    <path d="M 335 248 Q 385 258 426 272" fill="none" stroke="#1e5426" stroke-width="1.2" />
+
+                                    <path d="M 324 154 C 362 128, 404 144, 410 176 C 378 192, 338 178, 324 154 Z" fill="#85c48c" stroke="#1e5426" stroke-width="1.5" />
+                                </g>
+
+                                <!-- 2. Bourgeon terminal -->
+                                <g id="shape-bourgeon_terminal" class="organ-shape">
+                                    <path d="M 263 102 Q 270 68 277 102 Z" fill="#276b30" stroke="#133519" stroke-width="1.5" />
+                                </g>
+
+                                <!-- 3. Bourgeon axillaire -->
+                                <g id="shape-bourgeon_axillaire" class="organ-shape">
+                                    <path d="M 277 268 Q 292 250 286 272 Z" fill="#a3e635" stroke="#1e5426" stroke-width="1.2" />
+                                </g>
+
+                                <!-- 1. Fleur / Pétales -->
+                                <g id="shape-fleur" class="organ-shape">
+                                    <path d="M 264 142 Q 225 114 196 86" fill="none" stroke="#276b30" stroke-width="3.5" stroke-linecap="round" />
+                                    <g transform="translate(190, 80)">
+                                        <circle cx="0" cy="-19" r="14.5" fill="#ec4899" stroke="#be185d" stroke-width="1.5" />
+                                        <circle cx="18" cy="-6" r="14.5" fill="#f43f5e" stroke="#be185d" stroke-width="1.5" />
+                                        <circle cx="11" cy="15" r="14.5" fill="#ec4899" stroke="#be185d" stroke-width="1.5" />
+                                        <circle cx="-11" cy="15" r="14.5" fill="#f43f5e" stroke="#be185d" stroke-width="1.5" />
+                                        <circle cx="-18" cy="-6" r="14.5" fill="#ec4899" stroke="#be185d" stroke-width="1.5" />
+                                        <circle cx="0" cy="0" r="7.5" fill="#facc15" stroke="#ca8a04" stroke-width="1.5" />
+                                    </g>
+                                </g>
+
+                                <!-- ================= 11 HOTSPOTS NUMÉROTÉS ================= -->
+                                <!-- 1. Fleur / Pétales -->
+                                <g class="hotspot-group cursor-pointer active" data-organ="fleur" onclick="selectOrgan('fleur')" onmouseenter="selectOrgan('fleur')">
+                                    <line x1="172" y1="74" x2="115" y2="55" stroke="#1e293b" stroke-width="1.5" />
+                                    <circle cx="102" cy="55" r="14" fill="#ec4899" class="hotspot-pulse" />
+                                    <circle cx="102" cy="55" r="13" fill="#be185d" stroke="#fff" stroke-width="2.5" class="hotspot-ring" />
+                                    <text x="102" y="59" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">1</text>
+                                </g>
+
+                                <!-- 2. Bourgeon terminal -->
+                                <g class="hotspot-group cursor-pointer" data-organ="bourgeon_terminal" onclick="selectOrgan('bourgeon_terminal')" onmouseenter="selectOrgan('bourgeon_terminal')">
+                                    <line x1="275" y1="84" x2="342" y2="62" stroke="#1e293b" stroke-width="1.5" />
+                                    <circle cx="355" cy="62" r="14" fill="#10b981" class="hotspot-pulse" />
+                                    <circle cx="355" cy="62" r="13" fill="#1e5426" stroke="#fff" stroke-width="2.5" class="hotspot-ring" />
+                                    <text x="355" y="66" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">2</text>
+                                </g>
+
+                                <!-- 3. Bourgeon axillaire -->
+                                <g class="hotspot-group cursor-pointer" data-organ="bourgeon_axillaire" onclick="selectOrgan('bourgeon_axillaire')" onmouseenter="selectOrgan('bourgeon_axillaire')">
+                                    <line x1="286" y1="260" x2="345" y2="210" stroke="#1e293b" stroke-width="1.5" />
+                                    <circle cx="356" cy="210" r="14" fill="#10b981" class="hotspot-pulse" />
+                                    <circle cx="356" cy="210" r="13" fill="#35883f" stroke="#fff" stroke-width="2.5" class="hotspot-ring" />
+                                    <text x="356" y="214" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">3</text>
+                                </g>
+
+                                <!-- 4. Limbe -->
+                                <g class="hotspot-group cursor-pointer" data-organ="limbe" onclick="selectOrgan('limbe')" onmouseenter="selectOrgan('limbe')">
+                                    <line x1="138" y1="304" x2="84" y2="232" stroke="#1e293b" stroke-width="1.5" />
+                                    <circle cx="75" cy="222" r="14" fill="#10b981" class="hotspot-pulse" />
+                                    <circle cx="75" cy="222" r="13" fill="#276b30" stroke="#fff" stroke-width="2.5" class="hotspot-ring" />
+                                    <text x="75" y="226" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">4</text>
+                                </g>
+
+                                <!-- 5. Pétiole -->
+                                <g class="hotspot-group cursor-pointer" data-organ="petiole" onclick="selectOrgan('petiole')" onmouseenter="selectOrgan('petiole')">
+                                    <line x1="232" y1="308" x2="175" y2="262" stroke="#1e293b" stroke-width="1.5" />
+                                    <circle cx="164" cy="254" r="14" fill="#10b981" class="hotspot-pulse" />
+                                    <circle cx="164" cy="254" r="13" fill="#15803d" stroke="#fff" stroke-width="2.5" class="hotspot-ring" />
+                                    <text x="164" y="258" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">5</text>
+                                </g>
+
+                                <!-- 6. Entre-nœud -->
+                                <g class="hotspot-group cursor-pointer" data-organ="entre_noeud" onclick="selectOrgan('entre_noeud')" onmouseenter="selectOrgan('entre_noeud')">
+                                    <line x1="292" y1="222" x2="412" y2="222" stroke="#1e293b" stroke-width="1.5" />
+                                    <circle cx="424" cy="222" r="14" fill="#10b981" class="hotspot-pulse" />
+                                    <circle cx="424" cy="222" r="13" fill="#0d9488" stroke="#fff" stroke-width="2.5" class="hotspot-ring" />
+                                    <text x="424" y="226" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">6</text>
+                                </g>
+
+                                <!-- 7. Nœud -->
+                                <g class="hotspot-group cursor-pointer" data-organ="noeud" onclick="selectOrgan('noeud')" onmouseenter="selectOrgan('noeud')">
+                                    <line x1="266" y1="175" x2="195" y2="175" stroke="#1e293b" stroke-width="1.5" />
+                                    <circle cx="182" cy="175" r="14" fill="#10b981" class="hotspot-pulse" />
+                                    <circle cx="182" cy="175" r="13" fill="#059669" stroke="#fff" stroke-width="2.5" class="hotspot-ring" />
+                                    <text x="182" y="179" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">7</text>
+                                </g>
+
+                                <!-- 8. Tige -->
+                                <g class="hotspot-group cursor-pointer" data-organ="tige" onclick="selectOrgan('tige')" onmouseenter="selectOrgan('tige')">
+                                    <line x1="274" y1="342" x2="352" y2="332" stroke="#1e293b" stroke-width="1.5" />
+                                    <circle cx="365" cy="332" r="14" fill="#10b981" class="hotspot-pulse" />
+                                    <circle cx="365" cy="332" r="13" fill="#133519" stroke="#fff" stroke-width="2.5" class="hotspot-ring" />
+                                    <text x="365" y="336" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">8</text>
+                                </g>
+
+                                <!-- 9. Collet -->
+                                <g class="hotspot-group cursor-pointer" data-organ="collet" onclick="selectOrgan('collet')" onmouseenter="selectOrgan('collet')">
+                                    <line x1="256" y1="390" x2="162" y2="372" stroke="#1e293b" stroke-width="1.5" />
+                                    <circle cx="150" cy="372" r="14" fill="#d97706" class="hotspot-pulse" />
+                                    <circle cx="150" cy="372" r="13" fill="#7f4f24" stroke="#fff" stroke-width="2.5" class="hotspot-ring" />
+                                    <text x="150" y="376" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">9</text>
+                                </g>
+
+                                <!-- 10. Racine pivotante -->
+                                <g class="hotspot-group cursor-pointer" data-organ="racine_pivotante" onclick="selectOrgan('racine_pivotante')" onmouseenter="selectOrgan('racine_pivotante')">
+                                    <line x1="274" y1="490" x2="365" y2="435" stroke="#1e293b" stroke-width="1.5" />
+                                    <circle cx="378" cy="435" r="14" fill="#d97706" class="hotspot-pulse" />
+                                    <circle cx="378" cy="435" r="13" fill="#8c5a32" stroke="#fff" stroke-width="2.5" class="hotspot-ring" />
+                                    <text x="378" y="439" fill="#fff" font-size="10.5" font-weight="bold" text-anchor="middle">10</text>
+                                </g>
+
+                                <!-- 11. Poils absorbants & Coiffe -->
+                                <g class="hotspot-group cursor-pointer" data-organ="poils_coiffe" onclick="selectOrgan('poils_coiffe')" onmouseenter="selectOrgan('poils_coiffe')">
+                                    <line x1="262" y1="610" x2="178" y2="575" stroke="#1e293b" stroke-width="1.5" />
+                                    <line x1="184" y1="464" x2="166" y2="562" stroke="#1e293b" stroke-width="1.2" stroke-dasharray="3 3" />
+                                    <circle cx="164" cy="574" r="14" fill="#d97706" class="hotspot-pulse" />
+                                    <circle cx="164" cy="574" r="13" fill="#432818" stroke="#fff" stroke-width="2.5" class="hotspot-ring" />
+                                    <text x="164" y="578" fill="#fff" font-size="10.5" font-weight="bold" text-anchor="middle">11</text>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Colonne Droite : Panneau d'information + Légende interactive (compatible Mode Révision) -->
+                <div class="lg:col-span-5 flex flex-col gap-6">
+                    <!-- Carte Fiche Anatomique Dynamique -->
+                    <div id="organ-detail-card" class="bg-sage-50 dark:bg-forest-900 rounded-3xl border-2 border-emerald-500/80 p-6 sm:p-7 shadow-md transition-all">
+                        <div class="flex items-center justify-between gap-2 mb-4">
+                            <span id="organ-system-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-pink-100 dark:bg-pink-950/80 text-pink-800 dark:text-pink-300">
+                                Système caulinaire • Reproduction
+                            </span>
+                            <span id="organ-number-badge" class="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-sm flex items-center justify-center shadow-sm">
+                                1
+                            </span>
+                        </div>
+
+                        <!-- Bandeau d'alerte Mode Révision -->
+                        <div id="revision-hint-box" class="hidden mb-4 p-3.5 rounded-2xl bg-amber-100/90 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-200 text-xs font-semibold flex items-center justify-between gap-2">
+                            <span>🔍 Mode Révision actif : devinez l'organe n°<strong id="revision-num-hint">1</strong> à partir de son rôle ci-dessous !</span>
+                            <button onclick="revealCurrentOrganInRevision()" class="px-2.5 py-1 rounded-lg bg-amber-600 text-white font-bold shrink-0 hover:bg-amber-500 cursor-pointer">
+                                Révéler
+                            </button>
+                        </div>
+
+                        <h3 id="organ-title" class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 dark:text-cream-50 mb-3">
+                            Fleur / Pétales
+                        </h3>
+
+                        <p id="organ-description" class="text-slate-700 dark:text-cream-200 text-sm sm:text-base leading-relaxed mb-5">
+                            Portée par le pédoncule floral, la fleur est l'organe de reproduction sexuée des plantes à fleurs. Ses pétales colorés attirent les pollinisateurs vers les étamines (pollen) et le pistil.
+                        </p>
+
+                        <div class="bg-white dark:bg-forest-950/90 rounded-2xl p-4 border border-sage-200 dark:border-forest-800">
+                            <h4 class="text-xs font-bold uppercase text-emerald-700 dark:text-emerald-400 tracking-wider mb-1 flex items-center gap-1.5">
+                                <i class="ph-fill ph-sparkle"></i> Rôle botanique clé
+                            </h4>
+                            <p id="organ-function" class="text-sm text-slate-700 dark:text-cream-100 font-medium">
+                                Assurer la pollinisation, la fécondation et la production des graines.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Légende Interactive Catégorisée (11 pilules) -->
+                    <div class="bg-white dark:bg-forest-900/90 rounded-3xl border border-sage-200 dark:border-forest-800 p-5 shadow-sm space-y-4">
+                        <div>
+                            <h4 class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                                <i class="ph-fill ph-sun"></i> Système caulinaire / foliacé (1 à 8)
+                            </h4>
+                            <div id="legend-caulinaire" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <div class="pt-3 border-t border-sage-100 dark:border-forest-800">
+                            <h4 class="text-xs font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                                <i class="ph-fill ph-tree-structure"></i> Système radiculaire &amp; Collet (9 à 11)
+                            </h4>
+                            <div id="legend-radiculaire" class="flex flex-wrap gap-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= SECTION HERBIER (10 PLANTES + FAVORIS + COMPARATEUR) ================= -->
+    <section id="plantes" class="py-16 md:py-24 bg-sage-50 dark:bg-forest-950 border-b border-sage-200/80 dark:border-forest-800 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 reveal">
+                <div>
+                    <span class="text-emerald-600 dark:text-emerald-400 font-bold text-xs uppercase tracking-widest">
+                        Herbier Numérique Enrichi • 10 Espèces
+                    </span>
+                    <!-- Titre emblématique conservé -->
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-slate-900 dark:text-cream-50 mt-1">
+                        Voici nos premières plantes
+                    </h2>
+                    <p class="text-slate-600 dark:text-cream-200 mt-2 max-w-2xl text-sm sm:text-base">
+                        Ajoutez vos espèces favorites avec le cœur ❤️ ou sélectionnez <strong>2 plantes</strong> pour les comparer côte-à-côte.
+                    </p>
+                </div>
+
+                <!-- Barre de recherche en direct -->
+                <div class="relative w-full md:w-72">
+                    <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-cream-200/60 text-lg"></i>
+                    <input type="text" id="plant-search" placeholder="Rechercher nom, famille..."
+                        class="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white dark:bg-forest-900 border border-sage-300 dark:border-forest-700 text-sm text-slate-800 dark:text-cream-50 placeholder-slate-400 dark:placeholder-cream-200/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                </div>
+            </div>
+
+            <!-- Pilules de filtrage (Toutes, Fleurs, Feuillage, Aromatiques, Succulentes, Mes Favoris) -->
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-8 reveal">
+                <div class="flex flex-wrap gap-2" id="category-filters">
+                    <button data-category="all" class="filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-emerald-600 text-white shadow-sm transition cursor-pointer">
+                        Toutes (10)
+                    </button>
+                    <button data-category="fleurs" class="filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white dark:bg-forest-900 text-slate-700 dark:text-cream-100 border border-sage-200 dark:border-forest-700 hover:bg-sage-100 dark:hover:bg-forest-800 transition cursor-pointer">
+                        Fleurs
+                    </button>
+                    <button data-category="feuillage" class="filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white dark:bg-forest-900 text-slate-700 dark:text-cream-100 border border-sage-200 dark:border-forest-700 hover:bg-sage-100 dark:hover:bg-forest-800 transition cursor-pointer">
+                        Feuillage
+                    </button>
+                    <button data-category="aromatiques" class="filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white dark:bg-forest-900 text-slate-700 dark:text-cream-100 border border-sage-200 dark:border-forest-700 hover:bg-sage-100 dark:hover:bg-forest-800 transition cursor-pointer">
+                        Aromatiques
+                    </button>
+                    <button data-category="succulentes" class="filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white dark:bg-forest-900 text-slate-700 dark:text-cream-100 border border-sage-200 dark:border-forest-700 hover:bg-sage-100 dark:hover:bg-forest-800 transition cursor-pointer">
+                        Succulentes
+                    </button>
+                    <button data-category="favorites" id="fav-filter-btn" class="filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/80 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="ph-fill ph-heart"></i> Mes Favoris (<span id="filter-fav-count">0</span>)
+                    </button>
+                </div>
+
+                <!-- Bouton ouvrir le Comparateur -->
+                <button onclick="openCompareModal()" id="open-compare-btn"
+                    class="px-4 py-2 rounded-2xl bg-sage-800 dark:bg-forest-800 hover:bg-emerald-600 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition cursor-pointer">
+                    <i class="ph-bold ph-scales text-base"></i>
+                    <span>Comparer (<span id="compare-count">0</span>/2)</span>
+                </button>
+            </div>
+
+            <!-- Grille des 10 cartes plantes -->
+            <div id="plants-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 reveal">
+                <!-- Généré dynamiquement par JS -->
+            </div>
+
+            <!-- Message aucun résultat -->
+            <div id="no-plants-msg" class="hidden text-center py-12 bg-white dark:bg-forest-900 rounded-3xl border border-sage-200 dark:border-forest-800">
+                <i class="ph ph-plant text-4xl text-emerald-500 mb-2"></i>
+                <p class="text-slate-700 dark:text-cream-100 font-semibold">Aucune espèce ne correspond à ce filtre ou à cette recherche.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= MODULE "DIAGNOSTIQUER MA PLANTE" (ASSISTANT SOS PLANTE) ================= -->
+    <section id="sos-plante" class="py-16 md:py-24 bg-white dark:bg-forest-900/40 border-b border-sage-200/80 dark:border-forest-800 transition-colors duration-300">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
+            <div class="text-center max-w-2xl mx-auto mb-10">
+                <span class="px-3.5 py-1 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-xs font-bold uppercase tracking-wider">
+                    Assistant SOS Plante
+                </span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-slate-900 dark:text-cream-50 mt-3">
+                    Diagnostiquer ma plante
+                </h2>
+                <p class="text-slate-600 dark:text-cream-200 mt-2 text-sm sm:text-base">
+                    Sélectionnez le symptôme visible sur votre plante pour identifier immédiatement la cause probable et la solution botanique.
+                </p>
+            </div>
+
+            <!-- Boutons des 4 symptômes -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mb-8" id="symptom-buttons">
+                <button data-symptom="jaunes" class="symptom-btn p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/90 dark:bg-forest-900 text-left transition shadow-sm cursor-pointer">
+                    <div class="w-10 h-10 rounded-xl bg-yellow-100 dark:bg-yellow-950 text-yellow-600 dark:text-yellow-300 flex items-center justify-center text-xl mb-3">
+                        🍂
+                    </div>
+                    <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-cream-50">Feuilles jaunes</h3>
+                    <p class="text-xs text-slate-500 dark:text-cream-200/70 mt-1">Jaunissement des feuilles basses</p>
+                </button>
+
+                <button data-symptom="brunes" class="symptom-btn p-4 rounded-2xl border-2 border-sage-200 dark:border-forest-800 bg-sage-50/70 dark:bg-forest-900/60 hover:border-emerald-400 text-left transition cursor-pointer">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 flex items-center justify-center text-xl mb-3">
+                        🥀
+                    </div>
+                    <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-cream-50">Pointes brunes</h3>
+                    <p class="text-xs text-slate-500 dark:text-cream-200/70 mt-1">Extrémités sèches et cassantes</p>
+                </button>
+
+                <button data-symptom="molles" class="symptom-btn p-4 rounded-2xl border-2 border-sage-200 dark:border-forest-800 bg-sage-50/70 dark:bg-forest-900/60 hover:border-emerald-400 text-left transition cursor-pointer">
+                    <div class="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-950 text-sky-600 dark:text-sky-300 flex items-center justify-center text-xl mb-3">
+                        💧
+                    </div>
+                    <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-cream-50">Feuilles molles / tombantes</h3>
+                    <p class="text-xs text-slate-500 dark:text-cream-200/70 mt-1">Port affaissé et manque de fermeté</p>
+                </button>
+
+                <button data-symptom="etiolation" class="symptom-btn p-4 rounded-2xl border-2 border-sage-200 dark:border-forest-800 bg-sage-50/70 dark:bg-forest-900/60 hover:border-emerald-400 text-left transition cursor-pointer">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xl mb-3">
+                        📏
+                    </div>
+                    <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-cream-50">Tiges qui s'allongent</h3>
+                    <p class="text-xs text-slate-500 dark:text-cream-200/70 mt-1">Entre-nœuds très longs et pâles</p>
+                </button>
+            </div>
+
+            <!-- Panneau Diagnostic Résultat -->
+            <div class="bg-sage-50 dark:bg-forest-900 rounded-3xl border border-sage-200 dark:border-forest-700 p-6 sm:p-8 shadow-md">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div class="bg-white dark:bg-forest-950/90 p-5 rounded-2xl border border-rose-200 dark:border-rose-900/60">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1.5 mb-2">
+                            <i class="ph-fill ph-warning-circle text-base"></i> Cause probable
+                        </span>
+                        <h4 id="sos-cause-title" class="font-bold text-lg text-slate-900 dark:text-cream-50 mb-2">
+                            Excès d'arrosage &amp; asphyxie des racines
+                        </h4>
+                        <p id="sos-cause-desc" class="text-sm text-slate-600 dark:text-cream-200 leading-relaxed">
+                            L'eau stagnante au fond du pot prive les poils absorbants d'oxygène. Les racines ne peuvent plus alimenter correctement le feuillage, provoquant le jaunissement des feuilles inférieures.
+                        </p>
+                    </div>
+
+                    <div class="bg-white dark:bg-forest-950/90 p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/70">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 mb-2">
+                            <i class="ph-fill ph-first-aid-kit text-base"></i> Solution botanique
+                        </span>
+                        <h4 id="sos-solution-title" class="font-bold text-lg text-slate-900 dark:text-cream-50 mb-2">
+                            Drainer le pot et espacer les apports d'eau
+                        </h4>
+                        <p id="sos-solution-desc" class="text-sm text-slate-600 dark:text-cream-200 leading-relaxed">
+                            Videz immédiatement la soucoupe, vérifiez que le pot possède des trous de drainage et attendez que les 3 premiers centimètres de terreau soient secs avant de réarroser.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= SECTION QUIZ BOTANIQUE (8 QUESTIONS + CHRONO + RECORD) ================= -->
+    <section id="quiz" class="py-16 md:py-24 bg-sage-50 dark:bg-forest-950 transition-colors duration-300">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
+            <div class="text-center mb-10">
+                <span class="px-3.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider">
+                    Défi Botanique • 8 Questions
+                </span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-slate-900 dark:text-cream-50 mt-3">
+                    Testez vos connaissances !
+                </h2>
+                <p class="text-slate-600 dark:text-cream-200 mt-2 text-sm sm:text-base">
+                    Répondez aux 8 questions sur l'anatomie et les 10 plantes du site. Activez le chronomètre pour pimenter le défi !
+                </p>
+            </div>
+
+            <!-- Boîte du Quiz -->
+            <div class="relative overflow-hidden bg-white dark:bg-forest-900 rounded-3xl border border-sage-200 dark:border-forest-800 p-6 sm:p-10 shadow-xl">
+                <!-- Conteneur Confettis -->
+                <div id="confetti-container" class="pointer-events-none absolute inset-0 overflow-hidden"></div>
+
+                <div id="quiz-active-view">
+                    <!-- En-tête Quiz : Progression, Chrono optionnel, Score & Meilleur Score -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-sage-800 dark:text-emerald-300 mb-3">
+                        <span id="quiz-progress-text">Question 1 sur 8</span>
+
+                        <div class="flex items-center gap-2">
+                            <!-- Bouton Chrono optionnel -->
+                            <button id="timer-toggle-btn" onclick="toggleQuizTimer()"
+                                class="px-3 py-1 rounded-full bg-sage-100 dark:bg-forest-950 border border-sage-200 dark:border-forest-700 text-slate-700 dark:text-cream-200 hover:border-emerald-500 flex items-center gap-1.5 transition cursor-pointer">
+                                <i class="ph-bold ph-timer text-sm text-emerald-600"></i>
+                                <span id="timer-display">Chrono : OFF</span>
+                            </button>
+
+                            <span id="quiz-score-badge" class="px-3 py-1 rounded-full bg-emerald-50 dark:bg-forest-950 border border-emerald-200 dark:border-forest-700">
+                                Score : 0
+                            </span>
+                            <span id="quiz-record-badge" class="px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300">
+                                Record : 0/8
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="w-full h-2.5 bg-sage-100 dark:bg-forest-950 rounded-full overflow-hidden mb-8">
+                        <div id="quiz-progress-bar" class="h-full bg-emerald-500 transition-all duration-300 rounded-full" style="width: 12.5%"></div>
+                    </div>
+
+                    <!-- Intitulé de la question -->
+                    <h3 id="quiz-question" class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-cream-50 mb-6 leading-snug">
+                        Chargement...
+                    </h3>
+
+                    <!-- Choix -->
+                    <div id="quiz-options" class="space-y-3"></div>
+
+                    <!-- Feedback botanique -->
+                    <div id="quiz-feedback" class="hidden mt-6 p-4 rounded-2xl border text-sm leading-relaxed"></div>
+
+                    <!-- Bouton Suivant -->
+                    <div class="mt-8 flex justify-end">
+                        <button id="quiz-next-btn" class="hidden px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition flex items-center gap-2 shadow-md cursor-pointer">
+                            <span>Question suivante</span>
+                            <i class="ph-bold ph-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Écran Résultat Final -->
+                <div id="quiz-result-view" class="hidden text-center py-4 relative z-10">
+                    <div id="quiz-rank-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-xs font-extrabold uppercase tracking-wider mb-4 border border-emerald-300 dark:border-emerald-700">
+                        <i class="ph-fill ph-medal text-base"></i>
+                        Maître Botaniste
+                    </div>
+
+                    <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-500 to-sage-700 text-white flex items-center justify-center mx-auto mb-5 shadow-lg">
+                        <i class="ph-fill ph-trophy text-4xl"></i>
+                    </div>
+
+                    <h3 class="font-serif text-3xl font-bold text-slate-900 dark:text-cream-50 mb-2">
+                        Résultat du Quiz
+                    </h3>
+                    <p id="quiz-final-score" class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mb-1">
+                        Votre score : 8 / 8
+                    </p>
+                    <p id="quiz-final-record" class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3">
+                        Meilleur score sauvegardé : 8 / 8
+                    </p>
+                    <p id="quiz-final-message" class="text-slate-600 dark:text-cream-200 max-w-md mx-auto mb-8 text-sm sm:text-base">
+                        Félicitations !
+                    </p>
+
+                    <button onclick="restartQuiz()" class="px-7 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition inline-flex items-center gap-2 shadow-md cursor-pointer">
+                        <i class="ph-bold ph-arrows-clockwise text-lg"></i>
+                        Recommencer le quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FOOTER AVEC CRÉDIT EXACT & RACCOURCIS ================= -->
+    <footer class="mt-auto bg-sage-900 dark:bg-forest-950 text-sage-100 dark:text-cream-200 py-10 border-t border-sage-800 dark:border-forest-800 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3 text-center md:text-left">
+                <span class="text-2xl">🌱</span>
+                <div>
+                    <p class="font-bold text-white text-base tracking-wide">
+                        Site créé par Mohamed Skander Azzabi
+                    </p>
+                    <p class="text-xs text-sage-300 dark:text-cream-200/70">
+                        Botanique &amp; Anatomie des Plantes • Encyclopédie interactive
+                    </p>
+                </div>
+            </div>
+
+            <!-- Raccourcis navigation -->
+            <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs font-semibold text-sage-200 dark:text-cream-200/80">
+                <a href="#accueil" class="hover:text-white transition">Accueil</a>
+                <span>•</span>
+                <a href="#anatomie" class="hover:text-white transition">Schéma</a>
+                <span>•</span>
+                <a href="#plantes" class="hover:text-white transition">Herbier (10)</a>
+                <span>•</span>
+                <a href="#sos-plante" class="hover:text-white transition">SOS Plante</a>
+                <span>•</span>
+                <a href="#quiz" class="hover:text-white transition">Quiz</a>
+                <span>•</span>
+                <button onclick="openCookieModal()" class="hover:text-emerald-300 transition flex items-center gap-1 cursor-pointer font-bold text-emerald-200">
+                    🍪 Gérer les cookies
+                </button>
+            </div>
+
+            <!-- Bouton retour en haut fluide -->
+            <a href="#accueil" class="px-4 py-2.5 rounded-xl bg-sage-800 dark:bg-forest-900 hover:bg-emerald-600 dark:hover:bg-emerald-600 border border-sage-700 dark:border-forest-700 text-xs font-bold text-white flex items-center gap-2 transition shadow-sm">
+                <i class="ph-bold ph-arrow-up"></i>
+                Haut de page
+            </a>
+        </div>
+    </footer>
+
+    <!-- ================= BANDEAU DE CONSENTEMENT AUX COOKIES ================= -->
+    <div id="cookie-banner" role="region" aria-label="Consentement aux cookies"
+        class="fixed bottom-4 left-4 right-4 z-50 hidden transition-all duration-300">
+        <div class="max-w-5xl mx-auto bg-white/95 dark:bg-forest-900/95 backdrop-blur-xl border border-sage-300 dark:border-forest-700 rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
+            <div class="flex items-start gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-2xl shrink-0">
+                    🍪
+                </div>
+                <div>
+                    <h3 class="font-serif text-base sm:text-lg font-bold text-slate-900 dark:text-cream-50">
+                        Gestion de vos cookies botaniques
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-600 dark:text-cream-200 mt-1 leading-relaxed">
+                        Nous utilisons de vrais cookies (<code class="text-emerald-700 dark:text-emerald-400 font-semibold">document.cookie</code>) pour mémoriser votre thème <strong>Forêt Nocturne</strong>, vos plantes favorites, votre record au quiz et des statistiques locales anonymes.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 w-full lg:w-auto shrink-0">
+                <button onclick="openCookieModal()"
+                    class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-sage-100 dark:bg-forest-950 hover:bg-sage-200 dark:hover:bg-forest-800 border border-sage-300 dark:border-forest-700 text-slate-800 dark:text-cream-100 text-xs font-bold transition cursor-pointer">
+                    Personnaliser
+                </button>
+                <button onclick="rejectOptionalCookies()"
+                    class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white dark:bg-forest-900 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-sage-300 dark:border-forest-700 text-slate-700 dark:text-cream-200 text-xs font-bold transition cursor-pointer">
+                    Refuser les optionnels
+                </button>
+                <button onclick="acceptAllCookies()"
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition cursor-pointer">
+                    Tout accepter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODALE PARAMÈTRES DES COOKIES ================= -->
+    <div id="cookie-modal" role="dialog" aria-modal="true" aria-labelledby="cookie-modal-title"
+        class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm">
+        <div class="bg-white dark:bg-forest-900 rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-sage-200 dark:border-forest-700 p-6 sm:p-8">
+            <div class="flex items-center justify-between gap-4 pb-4 border-b border-sage-200 dark:border-forest-800 mb-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xl">
+                        🍪
+                    </div>
+                    <div>
+                        <h3 id="cookie-modal-title" class="font-serif text-xl sm:text-2xl font-bold text-slate-900 dark:text-cream-50">
+                            Paramètres des cookies
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-cream-200/70">Choisissez les données autorisées dans votre navigateur</p>
+                    </div>
+                </div>
+                <button onclick="closeCookieModal()" aria-label="Fermer les paramètres des cookies"
+                    class="w-9 h-9 rounded-full bg-sage-100 dark:bg-forest-950 text-slate-700 dark:text-cream-100 hover:bg-rose-500 hover:text-white flex items-center justify-center transition cursor-pointer">
+                    <i class="ph-bold ph-x text-base"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <!-- 1. Cookies essentiels (verrouillés) -->
+                <div class="p-4 rounded-2xl bg-sage-50/90 dark:bg-forest-950/90 border border-sage-200 dark:border-forest-800 flex items-start justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-sm text-slate-900 dark:text-cream-50">Cookies essentiels</span>
+                            <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-extrabold uppercase">
+                                Toujours actifs
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-cream-200 mt-1 leading-relaxed">
+                            Indispensables au fonctionnement sécurisé du site et à la mémorisation de votre choix de consentement (<code class="font-semibold">skander_botanique_consent</code>).
+                        </p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-not-allowed shrink-0 mt-1 opacity-75" title="Toujours actif">
+                        <input type="checkbox" checked disabled class="sr-only peer">
+                        <div class="w-11 h-6 bg-emerald-600 rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[22px] after:bg-white after:rounded-full after:h-5 after:w-5"></div>
+                    </label>
+                </div>
+
+                <!-- 2. Cookies de préférences (optionnel) -->
+                <div class="p-4 rounded-2xl bg-sage-50/90 dark:bg-forest-950/90 border border-sage-200 dark:border-forest-800 flex items-start justify-between gap-4">
+                    <div>
+                        <span class="font-bold text-sm text-slate-900 dark:text-cream-50 block">Cookies de préférences</span>
+                        <p class="text-xs text-slate-600 dark:text-cream-200 mt-1 leading-relaxed">
+                            Sauvegarde durablement votre <strong>Thème Forêt Nocturne</strong>, vos <strong>plantes favorites ❤️</strong> et votre <strong>record au quiz</strong>. Si désactivé, ils fonctionnent uniquement le temps de la session.
+                        </p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
+                        <input type="checkbox" id="toggle-cookie-prefs" class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-300 dark:bg-forest-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                    </label>
+                </div>
+
+                <!-- 3. Cookies statistiques locaux (optionnel) -->
+                <div class="p-4 rounded-2xl bg-sage-50/90 dark:bg-forest-950/90 border border-sage-200 dark:border-forest-800">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <span class="font-bold text-sm text-slate-900 dark:text-cream-50 block">Cookies statistiques locaux</span>
+                            <p class="text-xs text-slate-600 dark:text-cream-200 mt-1 leading-relaxed">
+                                Enregistre localement dans un cookie (<code class="font-semibold">skander_botanique_stats</code>) votre nombre de visites et de fiches plantes consultées (aucune donnée envoyée à un serveur externe).
+                            </p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
+                            <input type="checkbox" id="toggle-cookie-stats" class="sr-only peer">
+                            <div class="w-11 h-6 bg-slate-300 dark:bg-forest-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                        </label>
+                    </div>
+
+                    <!-- Récapitulatif en direct des statistiques locales -->
+                    <div class="mt-3 pt-3 border-t border-sage-200 dark:border-forest-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <span class="text-slate-500 dark:text-cream-200/70 font-semibold flex items-center gap-1.5">
+                            <i class="ph-fill ph-chart-bar text-emerald-600"></i>
+                            Aperçu du cookie statistique :
+                        </span>
+                        <span id="cookie-stats-summary" class="font-bold text-emerald-700 dark:text-emerald-400">
+                            Désactivé (0 visite • 0 fiche)
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions de la modale -->
+            <div class="mt-6 pt-4 border-t border-sage-200 dark:border-forest-800 flex flex-wrap items-center justify-between gap-2.5">
+                <button onclick="resetAllCookies()"
+                    class="px-3.5 py-2.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition cursor-pointer">
+                    Réinitialiser tout
+                </button>
+                <div class="flex items-center gap-2 ml-auto">
+                    <button onclick="saveCustomCookieSettings()"
+                        class="px-4 py-2.5 rounded-xl bg-sage-800 dark:bg-forest-800 hover:bg-sage-700 text-white text-xs font-bold transition cursor-pointer">
+                        Enregistrer mes choix
+                    </button>
+                    <button onclick="acceptAllCookies()"
+                        class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition cursor-pointer">
+                        Tout accepter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODALE DÉTAIL D'UNE PLANTE (AVEC JAUGES + NAVIGATION PREV/NEXT) ================= -->
+    <div id="plant-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm">
+        <div class="bg-white dark:bg-forest-900 rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-sage-200 dark:border-forest-700 transition-all">
+            <!-- Image bannière -->
+            <div class="relative h-56 sm:h-64 bg-sage-900 overflow-hidden">
+                <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-black/20"></div>
+
+                <!-- Bouton Favori & Fermer en haut -->
+                <div class="absolute top-4 right-4 flex items-center gap-2">
+                    <button id="modal-fav-btn" onclick="toggleFavoriteFromModal()" aria-label="Ajouter aux favoris"
+                        class="w-10 h-10 rounded-full bg-white/90 dark:bg-forest-950/90 text-rose-500 hover:scale-105 flex items-center justify-center shadow-lg transition cursor-pointer">
+                        <i id="modal-fav-icon" class="ph ph-heart text-xl"></i>
+                    </button>
+                    <button onclick="closePlantModal()" aria-label="Fermer la fiche"
+                        class="w-10 h-10 rounded-full bg-white/90 dark:bg-forest-950/90 text-slate-800 dark:text-cream-50 hover:scale-105 flex items-center justify-center shadow-lg transition cursor-pointer">
+                        <i class="ph-bold ph-x text-lg"></i>
+                    </button>
+                </div>
+
+                <div class="absolute bottom-4 left-6 right-6 flex flex-wrap items-end justify-between gap-2">
+                    <div>
+                        <span id="modal-category" class="px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider shadow-sm">
+                            Fleurs
+                        </span>
+                        <h3 id="modal-title" class="font-serif text-2xl sm:text-3xl font-bold text-white mt-2 drop-shadow">
+                            Nom de la plante
+                        </h3>
+                    </div>
+                    <span id="modal-latin" class="text-xs sm:text-sm italic text-emerald-200 font-serif bg-black/45 px-3 py-1 rounded-full">
+                        Nom scientifique
+                    </span>
+                </div>
+            </div>
+
+            <!-- Corps de la modale -->
+            <div class="p-6 sm:p-8 space-y-5">
+                <!-- Métadonnées Famille & Origine -->
+                <div class="flex flex-wrap gap-2.5 text-xs font-semibold">
+                    <span class="px-3.5 py-1.5 rounded-xl bg-sage-100 dark:bg-forest-950 text-sage-900 dark:text-emerald-300 border border-sage-200 dark:border-forest-800 flex items-center gap-1.5">
+                        <i class="ph-fill ph-tree text-emerald-600"></i>
+                        Famille : <strong id="modal-family"></strong>
+                    </span>
+                    <span class="px-3.5 py-1.5 rounded-xl bg-sage-100 dark:bg-forest-950 text-sage-900 dark:text-emerald-300 border border-sage-200 dark:border-forest-800 flex items-center gap-1.5">
+                        <i class="ph-fill ph-globe-hemisphere-west text-emerald-600"></i>
+                        Origine : <strong id="modal-origin"></strong>
+                    </span>
+                </div>
+
+                <!-- Description botanique -->
+                <p id="modal-desc" class="text-slate-700 dark:text-cream-100 text-sm sm:text-base leading-relaxed"></p>
+
+                <!-- Grille d'entretien avec jauges visuelles (Gouttes & Soleils) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div class="bg-amber-50/80 dark:bg-forest-950/90 border border-amber-200/70 dark:border-forest-800 p-4 rounded-2xl">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-amber-700 dark:text-amber-400 font-bold text-xs uppercase flex items-center gap-1.5">
+                                <i class="ph-fill ph-sun text-base"></i> Lumière
+                            </span>
+                            <span id="modal-light-gauge" class="flex items-center gap-0.5 text-amber-500 text-sm"></span>
+                        </div>
+                        <p id="modal-light" class="text-sm text-slate-800 dark:text-cream-100 font-medium"></p>
+                    </div>
+
+                    <div class="bg-blue-50/80 dark:bg-forest-950/90 border border-blue-200/70 dark:border-forest-800 p-4 rounded-2xl">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-blue-700 dark:text-sky-400 font-bold text-xs uppercase flex items-center gap-1.5">
+                                <i class="ph-fill ph-drop text-base"></i> Arrosage
+                            </span>
+                            <span id="modal-water-gauge" class="flex items-center gap-0.5 text-sky-500 text-sm"></span>
+                        </div>
+                        <p id="modal-water" class="text-sm text-slate-800 dark:text-cream-100 font-medium"></p>
+                    </div>
+
+                    <div class="bg-rose-50/80 dark:bg-forest-950/90 border border-rose-200/70 dark:border-forest-800 p-4 rounded-2xl">
+                        <div class="text-rose-700 dark:text-rose-400 font-bold text-xs uppercase flex items-center gap-1.5 mb-1">
+                            <i class="ph-fill ph-thermometer text-base"></i> Température
+                        </div>
+                        <p id="modal-temp" class="text-sm text-slate-800 dark:text-cream-100 font-medium"></p>
+                    </div>
+
+                    <div class="bg-emerald-50/80 dark:bg-forest-950/90 border border-emerald-200/70 dark:border-forest-800 p-4 rounded-2xl">
+                        <div class="text-emerald-800 dark:text-emerald-400 font-bold text-xs uppercase flex items-center gap-1.5 mb-1">
+                            <i class="ph-fill ph-mountains text-base"></i> Sol idéal
+                        </div>
+                        <p id="modal-soil" class="text-sm text-slate-800 dark:text-cream-100 font-medium"></p>
+                    </div>
+                </div>
+
+                <!-- Astuce de jardinier -->
+                <div class="bg-sage-100/90 dark:bg-forest-800/80 border border-sage-300 dark:border-forest-700 p-4 rounded-2xl flex items-start gap-3">
+                    <span class="text-xl shrink-0">💡</span>
+                    <div>
+                        <h4 class="text-xs font-extrabold uppercase tracking-wider text-sage-900 dark:text-emerald-300 mb-0.5">
+                            Astuce de jardinier
+                        </h4>
+                        <p id="modal-tip" class="text-xs sm:text-sm text-slate-700 dark:text-cream-100"></p>
+                    </div>
+                </div>
+
+                <!-- Navigation Plante précédente / Plante suivante -->
+                <div class="pt-4 border-t border-sage-200 dark:border-forest-800 flex items-center justify-between gap-3">
+                    <button onclick="navigateModalPlant(-1)"
+                        class="px-4 py-2.5 rounded-xl bg-sage-100 dark:bg-forest-950 hover:bg-emerald-600 hover:text-white text-slate-800 dark:text-cream-100 text-xs sm:text-sm font-bold flex items-center gap-2 transition cursor-pointer">
+                        <i class="ph-bold ph-caret-left"></i> Plante précédente
+                    </button>
+                    <span id="modal-index-indicator" class="text-xs font-bold text-slate-400 dark:text-cream-200/60">1 / 10</span>
+                    <button onclick="navigateModalPlant(1)"
+                        class="px-4 py-2.5 rounded-xl bg-sage-100 dark:bg-forest-950 hover:bg-emerald-600 hover:text-white text-slate-800 dark:text-cream-100 text-xs sm:text-sm font-bold flex items-center gap-2 transition cursor-pointer">
+                        Plante suivante <i class="ph-bold ph-caret-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODALE COMPARATEUR CÔTE-À-CÔTE (2 PLANTES) ================= -->
+    <div id="compare-modal" role="dialog" aria-modal="true" aria-labelledby="compare-modal-title" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm">
+        <div class="bg-white dark:bg-forest-900 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-sage-200 dark:border-forest-700 p-6 sm:p-8">
+            <div class="flex items-center justify-between gap-4 pb-4 border-b border-sage-200 dark:border-forest-800 mb-6">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xl">
+                        <i class="ph-bold ph-scales"></i>
+                    </div>
+                    <div>
+                        <h3 id="compare-modal-title" class="font-serif text-xl sm:text-2xl font-bold text-slate-900 dark:text-cream-50">
+                            Comparateur Botanique
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-cream-200/70">Comparez les besoins de 2 espèces côte-à-côte</p>
+                    </div>
+                </div>
+                <button onclick="closeCompareModal()" aria-label="Fermer le comparateur"
+                    class="w-10 h-10 rounded-full bg-sage-100 dark:bg-forest-950 text-slate-700 dark:text-cream-100 hover:bg-rose-500 hover:text-white flex items-center justify-center transition cursor-pointer">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Sélecteurs rapides pour choisir/changer les 2 plantes -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="compare-select-1" class="block text-xs font-bold uppercase text-emerald-700 dark:text-emerald-400 mb-1.5">Plante 1</label>
+                    <select id="compare-select-1" onchange="updateCompareFromSelects()"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-sage-50 dark:bg-forest-950 border border-sage-300 dark:border-forest-700 text-sm font-semibold text-slate-800 dark:text-cream-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"></select>
+                </div>
+                <div>
+                    <label for="compare-select-2" class="block text-xs font-bold uppercase text-emerald-700 dark:text-emerald-400 mb-1.5">Plante 2</label>
+                    <select id="compare-select-2" onchange="updateCompareFromSelects()"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-sage-50 dark:bg-forest-950 border border-sage-300 dark:border-forest-700 text-sm font-semibold text-slate-800 dark:text-cream-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"></select>
+                </div>
+            </div>
+
+            <!-- Tableau comparatif -->
+            <div id="compare-table-container" class="overflow-x-auto rounded-2xl border border-sage-200 dark:border-forest-800">
+                <!-- Rempli par JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT INTERACTIF COMPLET ================= -->
+    <script>
+        // 0. GESTIONNAIRE DE COOKIES (CookieManager utilisant document.cookie)
+        const CookieManager = {
+            CONSENT_NAME: 'skander_botanique_consent',
+            STATS_NAME: 'skander_botanique_stats',
+            PREFS_NAME: 'skander_botanique_prefs',
+            MAX_AGE: 60 * 60 * 24 * 180, // 180 jours
+
+            set(name, value, maxAge = this.MAX_AGE) {
+                const serialized = typeof value === 'string' ? value : JSON.stringify(value);
+                document.cookie = `${name}=${encodeURIComponent(serialized)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+            },
+
+            get(name) {
+                const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
+                if (!match) return null;
+                const raw = decodeURIComponent(match[1]);
+                try {
+                    return JSON.parse(raw);
+                } catch (e) {
+                    return raw;
+                }
+            },
+
+            remove(name) {
+                document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
+            },
+
+            getConsent() {
+                return this.get(this.CONSENT_NAME);
+            },
+
+            canUsePreferences() {
+                const consent = this.getConsent();
+                return !!(consent && consent.preferences);
+            },
+
+            canUseStats() {
+                const consent = this.getConsent();
+                return !!(consent && consent.statistics);
+            },
+
+            recordVisit() {
+                if (!this.canUseStats()) return;
+                const stats = this.get(this.STATS_NAME) || { visits: 0, plantsViewed: 0 };
+                stats.visits = (stats.visits || 0) + 1;
+                this.set(this.STATS_NAME, stats);
+                updateCookieStatsSummary();
+            },
+
+            recordPlantView() {
+                if (!this.canUseStats()) return;
+                const stats = this.get(this.STATS_NAME) || { visits: 1, plantsViewed: 0 };
+                stats.plantsViewed = (stats.plantsViewed || 0) + 1;
+                this.set(this.STATS_NAME, stats);
+                updateCookieStatsSummary();
+            },
+
+            syncPersistentStorage() {
+                if (this.canUsePreferences()) {
+                    const isDark = document.documentElement.classList.contains('dark');
+                    localStorage.setItem('botanica_theme', isDark ? 'dark' : 'light');
+                    localStorage.setItem('botanica_favorites', JSON.stringify(favorites));
+                    localStorage.setItem('botanica_best_score', String(bestScore));
+                    this.set(this.PREFS_NAME, {
+                        theme: isDark ? 'dark' : 'light',
+                        favCount: favorites.length,
+                        bestScore: bestScore
+                    });
+                } else {
+                    localStorage.removeItem('botanica_theme');
+                    localStorage.removeItem('botanica_favorites');
+                    localStorage.removeItem('botanica_best_score');
+                    this.remove(this.PREFS_NAME);
+                }
+
+                if (!this.canUseStats()) {
+                    this.remove(this.STATS_NAME);
+                }
+            }
+        };
+
+        const cookieBanner = document.getElementById('cookie-banner');
+        const cookieModal = document.getElementById('cookie-modal');
+
+        function updateCookieStatsSummary() {
+            const summaryEl = document.getElementById('cookie-stats-summary');
+            if (!summaryEl) return;
+            if (!CookieManager.canUseStats()) {
+                summaryEl.textContent = 'Désactivé (aucune donnée enregistrée)';
+                return;
+            }
+            const stats = CookieManager.get(CookieManager.STATS_NAME) || { visits: 0, plantsViewed: 0 };
+            summaryEl.textContent = `${stats.visits} visite(s) • ${stats.plantsViewed} fiche(s) consultée(s)`;
+        }
+
+        function initCookieBanner() {
+            const existingConsent = CookieManager.getConsent();
+            if (!existingConsent) {
+                cookieBanner.classList.remove('hidden');
+            } else {
+                cookieBanner.classList.add('hidden');
+                CookieManager.recordVisit();
+            }
+            updateCookieStatsSummary();
+        }
+
+        function openCookieModal() {
+            const consent = CookieManager.getConsent() || { preferences: true, statistics: true };
+            document.getElementById('toggle-cookie-prefs').checked = !!consent.preferences;
+            document.getElementById('toggle-cookie-stats').checked = !!consent.statistics;
+            updateCookieStatsSummary();
+            cookieModal.classList.remove('hidden');
+            cookieModal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCookieModal() {
+            cookieModal.classList.add('hidden');
+            cookieModal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        function applyCookieDecision(preferencesAllowed, statisticsAllowed) {
+            const firstDecision = !CookieManager.getConsent();
+            CookieManager.set(CookieManager.CONSENT_NAME, {
+                essential: true,
+                preferences: preferencesAllowed,
+                statistics: statisticsAllowed,
+                updatedAt: new Date().toISOString()
+            });
+            CookieManager.syncPersistentStorage();
+            if (statisticsAllowed && firstDecision) {
+                CookieManager.recordVisit();
+            }
+            updateCookieStatsSummary();
+            cookieBanner.classList.add('hidden');
+            closeCookieModal();
+        }
+
+        function acceptAllCookies() {
+            applyCookieDecision(true, true);
+        }
+
+        function rejectOptionalCookies() {
+            applyCookieDecision(false, false);
+        }
+
+        function saveCustomCookieSettings() {
+            const prefs = document.getElementById('toggle-cookie-prefs').checked;
+            const stats = document.getElementById('toggle-cookie-stats').checked;
+            applyCookieDecision(prefs, stats);
+        }
+
+        function resetAllCookies() {
+            CookieManager.remove(CookieManager.CONSENT_NAME);
+            CookieManager.remove(CookieManager.STATS_NAME);
+            CookieManager.remove(CookieManager.PREFS_NAME);
+            localStorage.removeItem('botanica_theme');
+            localStorage.removeItem('botanica_favorites');
+            localStorage.removeItem('botanica_best_score');
+            document.getElementById('toggle-cookie-prefs').checked = false;
+            document.getElementById('toggle-cookie-stats').checked = false;
+            updateCookieStatsSummary();
+            closeCookieModal();
+            cookieBanner.classList.remove('hidden');
+        }
+
+        cookieModal.addEventListener('click', (e) => {
+            if (e.target === cookieModal) closeCookieModal();
+        });
+
+        // 1. BARRE DE PROGRESSION DE LECTURE
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const percent = docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0;
+            document.getElementById('reading-progress').style.width = `${percent}%`;
+        });
+
+        // 2. GESTION DU THÈME SOMBRE ("THÈME FORÊT NOCTURNE") + LOCALSTORAGE
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeLabel = document.getElementById('theme-label');
+
+        function updateThemeUI() {
+            const isDark = document.documentElement.classList.contains('dark');
+            if (isDark) {
+                themeIcon.className = 'ph-fill ph-sun text-base text-amber-300';
+                themeLabel.textContent = 'Thème Clair Naturel';
+            } else {
+                themeIcon.className = 'ph-fill ph-moon-stars text-base text-sage-700';
+                themeLabel.textContent = 'Thème Forêt Nocturne';
+            }
+        }
+        updateThemeUI();
+
+        themeToggleBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            if (CookieManager.canUsePreferences()) {
+                localStorage.setItem('botanica_theme', isDark ? 'dark' : 'light');
+                CookieManager.syncPersistentStorage();
+            }
+            updateThemeUI();
+        });
+
+        // 3. MENU MOBILE
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+        });
+
+        // 4. ANIMATIONS AU DÉFILEMENT (INTERSECTION OBSERVER)
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.08 });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // 5. SCHÉMA ANATOMIQUE INTERACTIF (11 ORGANES + ZOOM + MODE RÉVISION)
+        const anatomyData = {
+            fleur: {
+                num: 1,
+                shortLabel: "Fleur / Pétales",
+                title: "Fleur / Pétales",
+                shapeId: "shape-fleur",
+                group: "caulinaire",
+                system: "Système caulinaire • Reproduction",
+                badgeClass: "bg-pink-100 dark:bg-pink-950/80 text-pink-800 dark:text-pink-300",
+                description: "Portée par le pédoncule floral, la fleur est l'organe de reproduction sexuée des plantes à fleurs. Ses pétales colorés attirent les insectes pollinisateurs vers les étamines (pollen) et le pistil.",
+                func: "Assurer la pollinisation, la fécondation et la formation des graines."
+            },
+            bourgeon_terminal: {
+                num: 2,
+                shortLabel: "Bourgeon terminal",
+                title: "Bourgeon terminal (apical)",
+                shapeId: "shape-bourgeon_terminal",
+                group: "caulinaire",
+                system: "Système caulinaire • Croissance",
+                badgeClass: "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300",
+                description: "Situé tout au sommet de la tige principale, le bourgeon terminal abrite un méristème actif dont les cellules se divisent continuellement pour faire grandir la plante en hauteur.",
+                func: "Assurer la croissance verticale en hauteur vers la lumière."
+            },
+            bourgeon_axillaire: {
+                num: 3,
+                shortLabel: "Bourgeon axillaire",
+                title: "Bourgeon axillaire",
+                shapeId: "shape-bourgeon_axillaire",
+                group: "caulinaire",
+                system: "Système caulinaire • Ramification",
+                badgeClass: "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300",
+                description: "Logé à l'aisselle d'une feuille (juste au-dessus de l'insertion du pétiole), le bourgeon axillaire donne naissance à une branche latérale (pousse axillaire) ou à un bouton floral.",
+                func: "Développer les ramifications latérales et étoffer le feuillage."
+            },
+            limbe: {
+                num: 4,
+                shortLabel: "Limbe",
+                title: "Limbe (lame de la feuille)",
+                shapeId: "shape-limbe",
+                group: "caulinaire",
+                system: "Système foliacé • Photosynthèse",
+                badgeClass: "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300",
+                description: "Partie large et aplatie de la feuille, riche en chlorophylle et parcourue de nervures conductrices. Sa face inférieure porte des stomates permettant les échanges gazeux.",
+                func: "Capter la lumière solaire pour produire la matière organique (photosynthèse)."
+            },
+            petiole: {
+                num: 5,
+                shortLabel: "Pétiole",
+                title: "Pétiole",
+                shapeId: "shape-petiole",
+                group: "caulinaire",
+                system: "Système foliacé • Liaison",
+                badgeClass: "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300",
+                description: "Petite tige souple qui relie le limbe de la feuille à la tige au niveau d'un nœud. Il oriente le limbe face au soleil et conduit la sève jusqu'aux nervures.",
+                func: "Rattacher le limbe à la tige et orienter la feuille vers la lumière."
+            },
+            entre_noeud: {
+                num: 6,
+                shortLabel: "Entre-nœud",
+                title: "Entre-nœud",
+                shapeId: "shape-entre_noeud",
+                group: "caulinaire",
+                system: "Système caulinaire • Élongation",
+                badgeClass: "bg-teal-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300",
+                description: "Segment de tige lisse compris entre deux nœuds successifs. Son élongation espace les étages de feuilles afin d'éviter qu'elles ne se fassent mutuellement de l'ombre.",
+                func: "Espacer les feuilles le long de la tige pour optimiser la captation solaire."
+            },
+            noeud: {
+                num: 7,
+                shortLabel: "Nœud",
+                title: "Nœud",
+                shapeId: "shape-noeud",
+                group: "caulinaire",
+                system: "Système caulinaire • Insertion",
+                badgeClass: "bg-teal-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300",
+                description: "Point d'insertion précis d'une feuille et d'un bourgeon axillaire sur la tige. Les faisceaux vasculaires s'y ramifient pour irriguer la feuille en eau et minéraux.",
+                func: "Servir de point d'attache aux feuilles et aux bourgeons axillaires."
+            },
+            tige: {
+                num: 8,
+                shortLabel: "Tige",
+                title: "Tige",
+                shapeId: "shape-tige",
+                group: "caulinaire",
+                system: "Système caulinaire • Soutien & Sève",
+                badgeClass: "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300",
+                description: "Axe aérien principal qui soutient l'ensemble des organes aériens. Elle contient le xylème (montée de la sève brute) et le phloème (distribution de la sève élaborée).",
+                func: "Soutenir la plante et assurer le transport bidirectionnel de la sève."
+            },
+            collet: {
+                num: 9,
+                shortLabel: "Collet",
+                title: "Collet",
+                shapeId: "shape-collet",
+                group: "radiculaire",
+                system: "Zone de transition • Surface du sol",
+                badgeClass: "bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300",
+                description: "Zone charnière située exactement au niveau de la surface du sol, marquant la limite anatomique entre la tige aérienne (système caulinaire) et les racines (système radiculaire).",
+                func: "Assurer la jonction entre la partie aérienne et la partie souterraine."
+            },
+            racine_pivotante: {
+                num: 10,
+                shortLabel: "Racine pivotante",
+                title: "Racine pivotante",
+                shapeId: "shape-racine_pivotante",
+                group: "radiculaire",
+                system: "Système radiculaire • Ancrage",
+                badgeClass: "bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300",
+                description: "Racine principale centrale qui s'enfonce verticalement en profondeur dans le sol et porte des racines latérales secondaires pour stabiliser la plante.",
+                func: "Ancrer solidement la plante dans le sol et stocker des réserves."
+            },
+            poils_coiffe: {
+                num: 11,
+                shortLabel: "Poils absorbants & Coiffe",
+                title: "Poils absorbants & Coiffe",
+                shapeId: "shape-poils_coiffe",
+                group: "radiculaire",
+                system: "Système radiculaire • Absorption & Protection",
+                badgeClass: "bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300",
+                description: "Les poils absorbants sont de fins filaments qui puisent l'eau et les sels minéraux, tandis que la coiffe est le capuchon protecteur lubrifié à l'extrémité de la racine.",
+                func: "Absorber l'eau/minéraux (poils) et protéger la pointe racinaire (coiffe)."
+            }
+        };
+
+        let selectedOrganKey = 'fleur';
+        let revisionMode = false;
+        let revisionRevealed = false;
+        let currentZoom = 1;
+
+        function zoomSvg(delta) {
+            currentZoom = Math.min(1.75, Math.max(0.7, +(currentZoom + delta).toFixed(2)));
+            document.getElementById('svg-zoom-wrapper').style.transform = `scale(${currentZoom})`;
+            document.getElementById('zoom-level-text').textContent = `${Math.round(currentZoom * 100)}%`;
+        }
+
+        function resetSvgZoom() {
+            currentZoom = 1;
+            document.getElementById('svg-zoom-wrapper').style.transform = 'scale(1)';
+            document.getElementById('zoom-level-text').textContent = '100%';
+        }
+
+        function toggleRevisionMode() {
+            revisionMode = !revisionMode;
+            revisionRevealed = false;
+
+            const btn = document.getElementById('revision-mode-btn');
+            const icon = document.getElementById('revision-icon');
+            const label = document.getElementById('revision-label');
+
+            if (revisionMode) {
+                btn.className = 'self-start md:self-auto px-5 py-3 rounded-2xl bg-amber-600 text-white font-bold text-xs sm:text-sm flex items-center gap-2.5 shadow-md transition cursor-pointer';
+                icon.className = 'ph-bold ph-eye text-lg';
+                label.textContent = 'Quitter le Mode Révision';
+            } else {
+                btn.className = 'self-start md:self-auto px-5 py-3 rounded-2xl bg-amber-100 dark:bg-amber-950/70 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-900/70 font-bold text-xs sm:text-sm flex items-center gap-2.5 shadow-sm transition cursor-pointer';
+                icon.className = 'ph-bold ph-eye-slash text-lg';
+                label.textContent = 'Mode Révision (Masquer les noms)';
+            }
+
+            renderAnatomyLegend();
+            selectOrgan(selectedOrganKey);
+        }
+
+        function revealCurrentOrganInRevision() {
+            revisionRevealed = true;
+            selectOrgan(selectedOrganKey);
+        }
+
+        function renderAnatomyLegend() {
+            const legendCaulinaire = document.getElementById('legend-caulinaire');
+            const legendRadiculaire = document.getElementById('legend-radiculaire');
+            legendCaulinaire.innerHTML = '';
+            legendRadiculaire.innerHTML = '';
+
+            Object.keys(anatomyData).forEach(key => {
+                const item = anatomyData[key];
+                const isSelected = key === selectedOrganKey;
+                const pill = document.createElement('button');
+                pill.dataset.organ = key;
+                pill.className = `legend-pill px-3 py-1.5 rounded-full text-xs font-semibold border transition flex items-center gap-1.5 cursor-pointer ${
+                    isSelected
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                    : 'bg-sage-50 dark:bg-forest-950 text-slate-700 dark:text-cream-100 border-sage-200 dark:border-forest-700 hover:border-emerald-500'
+                }`;
+
+                const displayLabel = revisionMode ? 'Organe masqué ???' : item.shortLabel;
+                pill.innerHTML = `<span class="font-extrabold opacity-85">${item.num}.</span> <span>${displayLabel}</span>`;
+                pill.addEventListener('click', () => {
+                    revisionRevealed = false;
+                    selectOrgan(key);
+                });
+                pill.addEventListener('mouseenter', () => {
+                    if (!revisionMode) selectOrgan(key);
+                });
+
+                if (item.group === 'caulinaire') {
+                    legendCaulinaire.appendChild(pill);
+                } else {
+                    legendRadiculaire.appendChild(pill);
+                }
+            });
+        }
+
+        function selectOrgan(organKey) {
+            const data = anatomyData[organKey];
+            if (!data) return;
+            selectedOrganKey = organKey;
+
+            const hintBox = document.getElementById('revision-hint-box');
+            const titleEl = document.getElementById('organ-title');
+
+            if (revisionMode && !revisionRevealed) {
+                hintBox.classList.remove('hidden');
+                document.getElementById('revision-num-hint').textContent = data.num;
+                titleEl.textContent = `Organe n°${data.num} — Quel est son nom ?`;
+            } else {
+                hintBox.classList.add('hidden');
+                titleEl.textContent = data.title;
+            }
+
+            document.getElementById('organ-description').textContent = data.description;
+            document.getElementById('organ-function').textContent = data.func;
+            document.getElementById('organ-number-badge').textContent = data.num;
+
+            const sysBadge = document.getElementById('organ-system-badge');
+            sysBadge.textContent = data.system;
+            sysBadge.className = `px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${data.badgeClass}`;
+
+            // Hotspots SVG
+            document.querySelectorAll('.hotspot-group').forEach(g => {
+                g.classList.toggle('active', g.dataset.organ === organKey);
+            });
+
+            // Surlignage dynamique de la forme correspondante sur le dessin SVG
+            document.querySelectorAll('.organ-shape').forEach(s => s.classList.remove('highlighted'));
+            if (organKey === 'poils_coiffe') {
+                document.getElementById('shape-poils_absorbants')?.classList.add('highlighted');
+                document.getElementById('shape-coiffe')?.classList.add('highlighted');
+            } else if (data.shapeId) {
+                document.getElementById(data.shapeId)?.classList.add('highlighted');
+            }
+
+            // Pilules de légende
+            document.querySelectorAll('.legend-pill').forEach(pill => {
+                const active = pill.dataset.organ === organKey;
+                pill.className = `legend-pill px-3 py-1.5 rounded-full text-xs font-semibold border transition flex items-center gap-1.5 cursor-pointer ${
+                    active
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                    : 'bg-sage-50 dark:bg-forest-950 text-slate-700 dark:text-cream-100 border-sage-200 dark:border-forest-700 hover:border-emerald-500'
+                }`;
+            });
+        }
+
+        renderAnatomyLegend();
+        selectOrgan('fleur');
+
+        // 6. HERBIER ENRICHI À 10 PLANTES (8 + Orchidée Phalaenopsis + Olivier)
+        function createBotanicalFallbackSVG(name, bgHex) {
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+                <rect width="800" height="500" fill="${bgHex}"/>
+                <circle cx="400" cy="210" r="95" fill="rgba(255,255,255,0.14)"/>
+                <path d="M400 280 C400 200, 330 160, 310 190 C330 230, 380 250, 400 280 Z" fill="#ffffff"/>
+                <path d="M400 280 C400 200, 470 160, 490 190 C470 230, 420 250, 400 280 Z" fill="#d1fae5"/>
+                <rect x="396" y="260" width="8" height="65" rx="4" fill="#ffffff"/>
+                <text x="400" y="385" font-family="sans-serif" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">${name}</text>
+            </svg>`;
+            return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+        }
+
+        const plantsDatabase = [
+            {
+                id: 1,
+                name: "Hibiscus",
+                latin: "Hibiscus rosa-sinensis",
+                family: "Malvaceae",
+                origin: "Asie tropicale",
+                category: "fleurs",
+                categoryLabel: "Fleurs",
+                image: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&w=800&q=80",
+                fallbackColor: "#be185d",
+                shortDesc: "Arbuste tropical aux grandes fleurs éclatantes dotées d'une colonne staminale proéminente.",
+                detailedDesc: "L'Hibiscus rose de Chine est un arbuste persistant célèbre pour ses corolles spectaculaires à cinq pétales. Sa fleur permet d'observer très clairement la colonne staminale (étamines soudées) entourant le pistil.",
+                light: "Plein soleil à lumière vive",
+                lightLevel: 3,
+                water: "Régulier en été, modéré en hiver",
+                waterLevel: 2,
+                temp: "18 °C à 28 °C (gélif sous 5 °C)",
+                soil: "Terreau riche, léger et bien drainé",
+                difficulty: "Modérée",
+                toxicity: "Non toxique (comestible en infusion)",
+                tip: "Brumisez son feuillage en été pour favoriser l'ouverture des boutons floraux."
+            },
+            {
+                id: 2,
+                name: "Tournesol",
+                latin: "Helianthus annuus",
+                family: "Asteraceae",
+                origin: "Amérique du Nord",
+                category: "fleurs",
+                categoryLabel: "Fleurs",
+                image: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=800&q=80",
+                fallbackColor: "#d97706",
+                shortDesc: "Grande plante annuelle connue pour son capitule doré suivant la course du soleil.",
+                detailedDesc: "Le Tournesol développe une tige robuste soutenue par une puissante racine pivotante. Son disque central est un capitule regroupant des centaines de petites fleurs fertiles produisant les graines.",
+                light: "Plein soleil direct indispensable",
+                lightLevel: 3,
+                water: "Modéré, tolère la sécheresse",
+                waterLevel: 2,
+                temp: "15 °C à 30 °C en pleine croissance",
+                soil: "Sol profond, fertile et bien ameubli",
+                difficulty: "Facile",
+                toxicity: "Non toxique (graines comestibles)",
+                tip: "Tuteurez les variétés géantes dès qu'elles dépassent 1,20 m pour résister au vent."
+            },
+            {
+                id: 3,
+                name: "Monstera Deliciosa",
+                latin: "Monstera deliciosa",
+                family: "Araceae",
+                origin: "Forêts tropicales d'Amérique centrale",
+                category: "feuillage",
+                categoryLabel: "Feuillage",
+                image: "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=800&q=80",
+                fallbackColor: "#047857",
+                shortDesc: "Liane tropicale aux larges feuilles perforées (fenestrations) et racines aériennes.",
+                detailedDesc: "Le Monstera deliciosa développe de grandes feuilles cordiformes dont le limbe se perfore naturellement avec l'âge pour laisser passer la lumière et résister aux pluies tropicales.",
+                light: "Lumière vive indirecte",
+                lightLevel: 2,
+                water: "1 fois par semaine (laisser sécher 3 cm)",
+                waterLevel: 2,
+                temp: "18 °C à 27 °C avec air humide",
+                soil: "Substrat aéré (terreau, écorces, perlite)",
+                difficulty: "Facile",
+                toxicity: "Toxique si ingéré (cristaux d'oxalate)",
+                tip: "Nettoyez régulièrement ses larges feuilles avec un chiffon humide pour booster la photosynthèse."
+            },
+            {
+                id: 4,
+                name: "Menthe Verte",
+                latin: "Mentha spicata",
+                family: "Lamiaceae",
+                origin: "Europe et bassin méditerranéen",
+                category: "aromatiques",
+                categoryLabel: "Aromatiques",
+                image: "https://images.unsplash.com/photo-1628556270448-4d4e4148e1b1?auto=format&fit=crop&w=800&q=80",
+                fallbackColor: "#0d9488",
+                shortDesc: "Plante vivace aromatique à tige carrée, riche en huiles essentielles rafraîchissantes.",
+                detailedDesc: "Reconnaissable à sa tige quadrangulaire et ses feuilles opposées gaufrées, la Menthe verte se propage rapidement grâce à ses tiges souterraines appelées rhizomes.",
+                light: "Mi-ombre à soleil doux du matin",
+                lightLevel: 2,
+                water: "Abondant (garder la terre fraîche)",
+                waterLevel: 3,
+                temp: "10 °C à 25 °C (très rustique)",
+                soil: "Terreau frais, humifère et humide",
+                difficulty: "Très facile",
+                toxicity: "Non toxique (aromatique culinaire)",
+                tip: "Cultivez-la en pot séparé car ses rhizomes envahissent vite tout le jardin !"
+            },
+            {
+                id: 5,
+                name: "Rose de Damas",
+                latin: "Rosa × damascena",
+                family: "Rosaceae",
+                origin: "Moyen-Orient",
+                category: "fleurs",
+                categoryLabel: "Fleurs",
+                image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
+                fallbackColor: "#e11d48",
+                shortDesc: "Rosier ancien réputé pour ses pétales intensément parfumés et ses feuilles composées.",
+                detailedDesc: "Cultivée depuis l'Antiquité pour l'eau de rose et la parfumerie, la Rose de Damas possède des tiges munies d'aiguillons et des feuilles composées de 5 à 7 folioles dentées.",
+                light: "Plein soleil (minimum 6 h/jour)",
+                lightLevel: 3,
+                water: "Régulier au pied sans mouiller les feuilles",
+                waterLevel: 2,
+                temp: "5 °C à 28 °C (résiste au gel)",
+                soil: "Sol argilo-limoneux riche et profond",
+                difficulty: "Modérée",
+                toxicity: "Non toxique (pétales comestibles)",
+                tip: "Arrosez toujours directement au pied pour éviter l'apparition de taches sur le feuillage."
+            },
+            {
+                id: 6,
+                name: "Fougère de Boston",
+                latin: "Nephrolepis exaltata",
+                family: "Nephrolepidaceae",
+                origin: "Régions tropicales humides",
+                category: "feuillage",
+                categoryLabel: "Feuillage",
+                image: "https://images.unsplash.com/photo-1598880940080-ff9a29891b85?auto=format&fit=crop&w=800&q=80",
+                fallbackColor: "#15803d",
+                shortDesc: "Plante vasculaire sans fleurs se reproduisant par des spores situées sous ses frondes.",
+                detailedDesc: "La Fougère de Boston appartient à une lignée végétale ancienne antérieure aux plantes à fleurs. Ses longues feuilles arquées (frondes) se déroulent en crosse lors de leur croissance.",
+                light: "Lumière tamisée ou ombre lumineuse",
+                lightLevel: 1,
+                water: "Fréquent (substrat toujours frais)",
+                waterLevel: 3,
+                temp: "16 °C à 24 °C en atmosphère humide",
+                soil: "Terreau léger riche en humus",
+                difficulty: "Modérée",
+                toxicity: "Non toxique pour les animaux",
+                tip: "Placez-la dans une salle de bain lumineuse ou sur un lit de billes d'argile humides."
+            },
+            {
+                id: 7,
+                name: "Lavande",
+                latin: "Lavandula angustifolia",
+                family: "Lamiaceae",
+                origin: "Bassin méditerranéen occidental",
+                category: "aromatiques",
+                categoryLabel: "Aromatiques",
+                image: "https://images.unsplash.com/photo-1499002238440-d264edd596ec?auto=format&fit=crop&w=800&q=80",
+                fallbackColor: "#7c3aed",
+                shortDesc: "Sous-arbrisseau méditerranéen aux épis floraux violets mellifères et feuillage argenté.",
+                detailedDesc: "Adaptée à la sécheresse, la Lavande possède des feuilles étroites recouvertes d'un fin duvet grisâtre qui limite l'évaporation de l'eau. Ses fleurs attirent massivement les abeilles.",
+                light: "Plein soleil chaud",
+                lightLevel: 3,
+                water: "Faible (laisser sécher complètement)",
+                waterLevel: 1,
+                temp: "-10 °C à 35 °C (excellente rusticité)",
+                soil: "Sol caillouteux, calcaire et très drainant",
+                difficulty: "Très facile",
+                toxicity: "Non toxique (usage aromatique)",
+                tip: "Taillez légèrement les tiges florales fanées en fin d'été pour garder un port compact."
+            },
+            {
+                id: 8,
+                name: "Aloe Vera",
+                latin: "Aloe barbadensis miller",
+                family: "Asphodelaceae",
+                origin: "Péninsule arabique et Afrique du Nord",
+                category: "succulentes",
+                categoryLabel: "Succulentes",
+                image: "https://images.unsplash.com/photo-1509423350716-97f9360b4e09?auto=format&fit=crop&w=800&q=80",
+                fallbackColor: "#059669",
+                shortDesc: "Plante succulente en rosette dont les feuilles charnues stockent un gel apaisant.",
+                detailedDesc: "L'Aloe vera est une plante xérophyte dont les feuilles épaisses abritent un parenchyme aquifère riche en eau. Son système radiculaire peu profond capte rapidement la moindre pluie.",
+                light: "Lumière vive à soleil doux",
+                lightLevel: 3,
+                water: "Espacé (toutes les 2 à 3 semaines)",
+                waterLevel: 1,
+                temp: "15 °C à 30 °C (craint le gel)",
+                soil: "Terreau spécial cactus très drainant",
+                difficulty: "Très facile",
+                toxicity: "Sève jaune irritante (gel interne purifié utile)",
+                tip: "Utilisez un pot en terre cuite poreuse pour éviter toute rétention d'humidité aux racines."
+            },
+            {
+                id: 9,
+                name: "Orchidée Phalaenopsis",
+                latin: "Phalaenopsis amabilis",
+                family: "Orchidaceae",
+                origin: "Asie du Sud-Est tropicale",
+                category: "fleurs",
+                categoryLabel: "Fleurs",
+                image: "https://images.unsplash.com/photo-1566908829550-e6551b00979b?auto=format&fit=crop&w=800&q=80",
+                fallbackColor: "#9333ea",
+                shortDesc: "Orchidée épiphyte spectaculaire aux fleurs durables et aux racines aériennes photosynthétiques.",
+                detailedDesc: "Dans la nature, l'Orchidée Phalaenopsis pousse accrochée à l'écorce des arbres sans être parasite. Ses racines charnues recouvertes de velamen deviennent vertes lorsqu'elles sont hydratées.",
+                light: "Lumière vive filtrée (voilage)",
+                lightLevel: 2,
+                water: "Bain de 10 min tous les 8 à 10 jours",
+                waterLevel: 1,
+                temp: "18 °C à 25 °C toute l'année",
+                soil: "Écorces de pin calibrées (sans terreau)",
+                difficulty: "Modérée",
+                toxicity: "Non toxique",
+                tip: "Cultivez-la dans un pot transparent : arrosez uniquement quand ses racines redeviennent gris argenté."
+            },
+            {
+                id: 10,
+                name: "Olivier",
+                latin: "Olea europaea",
+                family: "Oleaceae",
+                origin: "Bassin méditerranéen",
+                category: "feuillage",
+                categoryLabel: "Feuillage",
+                image: "https://images.unsplash.com/photo-1508005440893-155698283978?auto=format&fit=crop&w=800&q=80",
+                fallbackColor: "#4d7c0f",
+                shortDesc: "Arbre emblématique méditerranéen au feuillage persistant vert argenté et tronc noueux.",
+                detailedDesc: "Symbole de paix et de longévité en Méditerranée, l'Olivier possède des feuilles opposées coriaces, vert foncé dessus et argentées dessous pour réfléchir la chaleur. Son fruit est une drupe : l'olive.",
+                light: "Plein soleil maximal",
+                lightLevel: 3,
+                water: "Modéré (très résistant à la sécheresse)",
+                waterLevel: 1,
+                temp: "-8 °C à 38 °C",
+                soil: "Sol caillouteux, sec et très bien drainé",
+                difficulty: "Facile",
+                toxicity: "Non toxique (olives comestibles après préparation)",
+                tip: "Privilégiez la taille de formation au printemps après les gelées pour aérer le centre de la ramure."
+            }
+        ];
+
+        // État Favoris (persisté uniquement si cookies de préférences autorisés) & Comparateur (max 2 IDs)
+        let favorites = CookieManager.canUsePreferences()
+            ? JSON.parse(localStorage.getItem('botanica_favorites') || '[]')
+            : [];
+        let compareIds = [1, 3]; // Par défaut Hibiscus vs Monstera si l'utilisateur ouvre directement le comparateur
+        let currentCategory = 'all';
+        let currentSearch = '';
+        let currentModalPlantId = 1;
+
+        function saveFavorites() {
+            if (CookieManager.canUsePreferences()) {
+                localStorage.setItem('botanica_favorites', JSON.stringify(favorites));
+                CookieManager.syncPersistentStorage();
+            }
+            updateFavoritesCounters();
+        }
+
+        function updateFavoritesCounters() {
+            document.getElementById('nav-fav-count').textContent = favorites.length;
+            document.getElementById('filter-fav-count').textContent = favorites.length;
+        }
+
+        function toggleFavorite(id, event) {
+            if (event) event.stopPropagation();
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(favId => favId !== id);
+            } else {
+                favorites.push(id);
+            }
+            saveFavorites();
+            renderPlants();
+            if (!document.getElementById('plant-modal').classList.contains('hidden')) {
+                updateModalFavIcon(id);
+            }
+        }
+
+        function activateFavoritesFilter() {
+            currentCategory = 'favorites';
+            filterBtns.forEach(b => {
+                if (b.dataset.category === 'favorites') {
+                    b.className = 'filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-rose-600 text-white shadow-sm transition flex items-center gap-1.5 cursor-pointer';
+                } else {
+                    b.className = 'filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white dark:bg-forest-900 text-slate-700 dark:text-cream-100 border border-sage-200 dark:border-forest-700 hover:bg-sage-100 dark:hover:bg-forest-800 transition cursor-pointer';
+                }
+            });
+            renderPlants();
+        }
+
+        function toggleCompareSelection(id, event) {
+            if (event) event.stopPropagation();
+            if (compareIds.includes(id)) {
+                compareIds = compareIds.filter(item => item !== id);
+            } else {
+                if (compareIds.length >= 2) {
+                    compareIds.shift(); // Remplace la plus ancienne sélection
+                }
+                compareIds.push(id);
+            }
+            document.getElementById('compare-count').textContent = compareIds.length;
+            renderPlants();
+        }
+
+        // Génération d'icônes de jauge (gouttes / soleils sur 3)
+        function renderLevelIcons(level, filledClass, emptyClass) {
+            let html = '';
+            for (let i = 1; i <= 3; i++) {
+                html += `<i class="${i <= level ? filledClass : emptyClass}"></i>`;
+            }
+            return html;
+        }
+
+        // Plante du jour aléatoire
+        let potdId = 1;
+        function pickRandomPlantOfDay() {
+            let randomPlant;
+            do {
+                randomPlant = plantsDatabase[Math.floor(Math.random() * plantsDatabase.length)];
+            } while (randomPlant.id === potdId && plantsDatabase.length > 1);
+
+            potdId = randomPlant.id;
+            const fallbackUrl = createBotanicalFallbackSVG(randomPlant.name, randomPlant.fallbackColor);
+            const img = document.getElementById('potd-img');
+            img.src = randomPlant.image;
+            img.alt = randomPlant.name;
+            img.onerror = function() { this.onerror = null; this.src = fallbackUrl; };
+
+            document.getElementById('potd-name').textContent = randomPlant.name;
+            document.getElementById('potd-latin').textContent = randomPlant.latin;
+            document.getElementById('potd-cat').textContent = randomPlant.categoryLabel;
+            document.getElementById('potd-desc').textContent = randomPlant.shortDesc;
+            document.getElementById('potd-water-icons').innerHTML = renderLevelIcons(randomPlant.waterLevel, 'ph-fill ph-drop', 'ph ph-drop opacity-40');
+            document.getElementById('potd-light-icons').innerHTML = renderLevelIcons(randomPlant.lightLevel, 'ph-fill ph-sun', 'ph ph-sun opacity-40');
+            document.getElementById('potd-card').onclick = () => openPlantModal(randomPlant.id);
+        }
+
+        // Rendu de la grille des 10 plantes
+        const plantsGrid = document.getElementById('plants-grid');
+        const searchInput = document.getElementById('plant-search');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const noPlantsMsg = document.getElementById('no-plants-msg');
+
+        function renderPlants() {
+            plantsGrid.innerHTML = '';
+            const filtered = plantsDatabase.filter(plant => {
+                const matchCat = currentCategory === 'all'
+                    ? true
+                    : currentCategory === 'favorites'
+                        ? favorites.includes(plant.id)
+                        : plant.category === currentCategory;
+
+                const matchSearch = plant.name.toLowerCase().includes(currentSearch) ||
+                                    plant.family.toLowerCase().includes(currentSearch) ||
+                                    plant.latin.toLowerCase().includes(currentSearch);
+                return matchCat && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                noPlantsMsg.classList.remove('hidden');
+                return;
+            }
+            noPlantsMsg.classList.add('hidden');
+
+            filtered.forEach(plant => {
+                const fallbackUrl = createBotanicalFallbackSVG(plant.name, plant.fallbackColor);
+                const isFav = favorites.includes(plant.id);
+                const isCompared = compareIds.includes(plant.id);
+
+                const card = document.createElement('article');
+                card.onclick = () => openPlantModal(plant.id);
+                card.className = `group cursor-pointer bg-white dark:bg-forest-900 rounded-3xl border overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col ${
+                    isCompared ? 'border-emerald-500 ring-2 ring-emerald-500/40' : 'border-sage-200 dark:border-forest-800'
+                }`;
+
+                card.innerHTML = `
+                    <div class="h-40 bg-sage-100 dark:bg-forest-950 relative overflow-hidden">
+                        <img src="${plant.image}"
+                             alt="${plant.name}"
+                             onerror="this.onerror=null; this.src='${fallbackUrl}';"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+
+                        <span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-white/95 dark:bg-forest-950/90 text-sage-800 dark:text-emerald-300 text-[10px] font-bold shadow-sm">
+                            ${plant.categoryLabel}
+                        </span>
+
+                        <!-- Boutons Favori ❤️ + Comparer ⚖️ -->
+                        <div class="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+                            <button onclick="toggleCompareSelection(${plant.id}, event)" title="Sélectionner pour comparer"
+                                class="w-8 h-8 rounded-full backdrop-blur-sm flex items-center justify-center shadow-sm transition cursor-pointer ${
+                                    isCompared
+                                    ? 'bg-emerald-600 text-white'
+                                    : 'bg-white/90 dark:bg-forest-950/85 text-slate-700 dark:text-cream-100 hover:bg-emerald-500 hover:text-white'
+                                }">
+                                <i class="ph-bold ph-scales text-sm"></i>
+                            </button>
+                            <button onclick="toggleFavorite(${plant.id}, event)" title="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}"
+                                class="w-8 h-8 rounded-full bg-white/90 dark:bg-forest-950/85 backdrop-blur-sm flex items-center justify-center shadow-sm hover:scale-110 transition cursor-pointer ${
+                                    isFav ? 'text-rose-500' : 'text-slate-600 dark:text-cream-200'
+                                }">
+                                <i class="${isFav ? 'ph-fill' : 'ph'} ph-heart text-base"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 flex-1 flex flex-col">
+                        <div class="flex items-center justify-between gap-1 text-[10px] text-slate-400 dark:text-cream-200/60">
+                            <span class="italic font-serif truncate">${plant.latin}</span>
+                            <span class="font-bold text-emerald-700 dark:text-emerald-400 shrink-0">${plant.family}</span>
+                        </div>
+                        <h3 class="font-serif text-lg font-bold text-slate-900 dark:text-cream-50 mt-0.5 mb-1.5 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                            ${plant.name}
+                        </h3>
+                        <p class="text-xs text-slate-600 dark:text-cream-200 line-clamp-2 mb-3 flex-1">
+                            ${plant.shortDesc}
+                        </p>
+
+                        <div class="pt-2.5 border-t border-sage-100 dark:border-forest-800 flex items-center justify-between text-xs">
+                            <span class="flex items-center gap-0.5 text-amber-500" title="Lumière">
+                                ${renderLevelIcons(plant.lightLevel, 'ph-fill ph-sun', 'ph ph-sun opacity-35')}
+                            </span>
+                            <span class="flex items-center gap-0.5 text-sky-500" title="Arrosage">
+                                ${renderLevelIcons(plant.waterLevel, 'ph-fill ph-drop', 'ph ph-drop opacity-35')}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                plantsGrid.appendChild(card);
+            });
+        }
+
+        // Écouteurs filtres & recherche
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cat = btn.dataset.category;
+                if (cat === 'favorites') {
+                    activateFavoritesFilter();
+                    return;
+                }
+                filterBtns.forEach(b => {
+                    if (b.dataset.category === 'favorites') {
+                        b.className = 'filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/80 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition flex items-center gap-1.5 cursor-pointer';
+                    } else {
+                        b.className = 'filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white dark:bg-forest-900 text-slate-700 dark:text-cream-100 border border-sage-200 dark:border-forest-700 hover:bg-sage-100 dark:hover:bg-forest-800 transition cursor-pointer';
+                    }
+                });
+                btn.className = 'filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-emerald-600 text-white shadow-sm transition cursor-pointer';
+                currentCategory = cat;
+                renderPlants();
+            });
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            currentSearch = e.target.value.toLowerCase().trim();
+            renderPlants();
+        });
+
+        // 7. MODALE FICHE PLANTE + NAVIGATION PRÉCÉDENTE / SUIVANTE
+        const plantModal = document.getElementById('plant-modal');
+
+        function updateModalFavIcon(id) {
+            const isFav = favorites.includes(id);
+            const icon = document.getElementById('modal-fav-icon');
+            icon.className = isFav ? 'ph-fill ph-heart text-xl text-rose-500' : 'ph ph-heart text-xl text-slate-600 dark:text-cream-100';
+        }
+
+        function toggleFavoriteFromModal() {
+            toggleFavorite(currentModalPlantId);
+        }
+
+        function openPlantModal(id) {
+            const index = plantsDatabase.findIndex(p => p.id === id);
+            if (index === -1) return;
+            const plant = plantsDatabase[index];
+            currentModalPlantId = plant.id;
+            CookieManager.recordPlantView();
+
+            const fallbackUrl = createBotanicalFallbackSVG(plant.name, plant.fallbackColor);
+            const modalImg = document.getElementById('modal-img');
+            modalImg.src = plant.image;
+            modalImg.alt = plant.name;
+            modalImg.onerror = function() { this.onerror = null; this.src = fallbackUrl; };
+
+            document.getElementById('modal-category').textContent = plant.categoryLabel;
+            document.getElementById('modal-title').textContent = plant.name;
+            document.getElementById('modal-latin').textContent = plant.latin;
+            document.getElementById('modal-family').textContent = plant.family;
+            document.getElementById('modal-origin').textContent = plant.origin;
+            document.getElementById('modal-desc').textContent = plant.detailedDesc;
+            document.getElementById('modal-light').textContent = plant.light;
+            document.getElementById('modal-light-gauge').innerHTML = renderLevelIcons(plant.lightLevel, 'ph-fill ph-sun', 'ph ph-sun opacity-35');
+            document.getElementById('modal-water').textContent = plant.water;
+            document.getElementById('modal-water-gauge').innerHTML = renderLevelIcons(plant.waterLevel, 'ph-fill ph-drop', 'ph ph-drop opacity-35');
+            document.getElementById('modal-temp').textContent = plant.temp;
+            document.getElementById('modal-soil').textContent = plant.soil;
+            document.getElementById('modal-tip').textContent = plant.tip;
+            document.getElementById('modal-index-indicator').textContent = `${index + 1} / ${plantsDatabase.length}`;
+
+            updateModalFavIcon(plant.id);
+
+            plantModal.classList.remove('hidden');
+            plantModal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function navigateModalPlant(direction) {
+            const currentIndex = plantsDatabase.findIndex(p => p.id === currentModalPlantId);
+            const nextIndex = (currentIndex + direction + plantsDatabase.length) % plantsDatabase.length;
+            openPlantModal(plantsDatabase[nextIndex].id);
+        }
+
+        function closePlantModal() {
+            plantModal.classList.add('hidden');
+            plantModal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        plantModal.addEventListener('click', (e) => {
+            if (e.target === plantModal) closePlantModal();
+        });
+
+        // 8. COMPARATEUR CÔTE-À-CÔTE (2 PLANTES)
+        const compareModal = document.getElementById('compare-modal');
+
+        function populateCompareSelects() {
+            const s1 = document.getElementById('compare-select-1');
+            const s2 = document.getElementById('compare-select-2');
+            s1.innerHTML = '';
+            s2.innerHTML = '';
+
+            plantsDatabase.forEach(p => {
+                s1.innerHTML += `<option value="${p.id}">${p.name} (${p.family})</option>`;
+                s2.innerHTML += `<option value="${p.id}">${p.name} (${p.family})</option>`;
+            });
+
+            s1.value = compareIds[0] || 1;
+            s2.value = compareIds[1] || 3;
+        }
+
+        function updateCompareFromSelects() {
+            const id1 = parseInt(document.getElementById('compare-select-1').value, 10);
+            const id2 = parseInt(document.getElementById('compare-select-2').value, 10);
+            compareIds = [id1, id2];
+            document.getElementById('compare-count').textContent = compareIds.length;
+            renderPlants();
+            renderCompareTable(id1, id2);
+        }
+
+        function renderCompareTable(id1, id2) {
+            const p1 = plantsDatabase.find(p => p.id === id1) || plantsDatabase[0];
+            const p2 = plantsDatabase.find(p => p.id === id2) || plantsDatabase[1];
+            const f1 = createBotanicalFallbackSVG(p1.name, p1.fallbackColor);
+            const f2 = createBotanicalFallbackSVG(p2.name, p2.fallbackColor);
+
+            document.getElementById('compare-table-container').innerHTML = `
+                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <thead>
+                        <tr class="bg-sage-50 dark:bg-forest-950 border-b border-sage-200 dark:border-forest-800">
+                            <th class="p-3.5 font-bold text-slate-500 dark:text-cream-200/70 w-1/4">Critère</th>
+                            <th class="p-3.5 w-[37.5%]">
+                                <div class="flex items-center gap-2.5">
+                                    <img src="${p1.image}" onerror="this.onerror=null;this.src='${f1}';" class="w-10 h-10 rounded-xl object-cover shrink-0">
+                                    <div>
+                                        <span class="font-serif font-bold text-slate-900 dark:text-cream-50 block">${p1.name}</span>
+                                        <span class="text-[11px] italic text-emerald-600 dark:text-emerald-400">${p1.latin}</span>
+                                    </div>
+                                </div>
+                            </th>
+                            <th class="p-3.5 w-[37.5%]">
+                                <div class="flex items-center gap-2.5">
+                                    <img src="${p2.image}" onerror="this.onerror=null;this.src='${f2}';" class="w-10 h-10 rounded-xl object-cover shrink-0">
+                                    <div>
+                                        <span class="font-serif font-bold text-slate-900 dark:text-cream-50 block">${p2.name}</span>
+                                        <span class="text-[11px] italic text-emerald-600 dark:text-emerald-400">${p2.latin}</span>
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-sage-100 dark:divide-forest-800">
+                        <tr>
+                            <td class="p-3.5 font-bold text-slate-700 dark:text-cream-200">☀️ Lumière</td>
+                            <td class="p-3.5 text-slate-700 dark:text-cream-100">
+                                <div class="text-amber-500 mb-0.5">${renderLevelIcons(p1.lightLevel, 'ph-fill ph-sun', 'ph ph-sun opacity-35')}</div>
+                                ${p1.light}
+                            </td>
+                            <td class="p-3.5 text-slate-700 dark:text-cream-100">
+                                <div class="text-amber-500 mb-0.5">${renderLevelIcons(p2.lightLevel, 'ph-fill ph-sun', 'ph ph-sun opacity-35')}</div>
+                                ${p2.light}
+                            </td>
+                        </tr>
+                        <tr class="bg-sage-50/40 dark:bg-forest-950/40">
+                            <td class="p-3.5 font-bold text-slate-700 dark:text-cream-200">💧 Eau</td>
+                            <td class="p-3.5 text-slate-700 dark:text-cream-100">
+                                <div class="text-sky-500 mb-0.5">${renderLevelIcons(p1.waterLevel, 'ph-fill ph-drop', 'ph ph-drop opacity-35')}</div>
+                                ${p1.water}
+                            </td>
+                            <td class="p-3.5 text-slate-700 dark:text-cream-100">
+                                <div class="text-sky-500 mb-0.5">${renderLevelIcons(p2.waterLevel, 'ph-fill ph-drop', 'ph ph-drop opacity-35')}</div>
+                                ${p2.water}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="p-3.5 font-bold text-slate-700 dark:text-cream-200">🌡️ Température</td>
+                            <td class="p-3.5 text-slate-700 dark:text-cream-100">${p1.temp}</td>
+                            <td class="p-3.5 text-slate-700 dark:text-cream-100">${p2.temp}</td>
+                        </tr>
+                        <tr class="bg-sage-50/40 dark:bg-forest-950/40">
+                            <td class="p-3.5 font-bold text-slate-700 dark:text-cream-200">🪴 Difficulté</td>
+                            <td class="p-3.5 font-semibold text-emerald-700 dark:text-emerald-400">${p1.difficulty}</td>
+                            <td class="p-3.5 font-semibold text-emerald-700 dark:text-emerald-400">${p2.difficulty}</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3.5 font-bold text-slate-700 dark:text-cream-200">⚠️ Toxicité</td>
+                            <td class="p-3.5 text-slate-700 dark:text-cream-100">${p1.toxicity}</td>
+                            <td class="p-3.5 text-slate-700 dark:text-cream-100">${p2.toxicity}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function openCompareModal() {
+            populateCompareSelects();
+            updateCompareFromSelects();
+            compareModal.classList.remove('hidden');
+            compareModal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCompareModal() {
+            compareModal.classList.add('hidden');
+            compareModal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        compareModal.addEventListener('click', (e) => {
+            if (e.target === compareModal) closeCompareModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (!plantModal.classList.contains('hidden')) closePlantModal();
+                if (!compareModal.classList.contains('hidden')) closeCompareModal();
+                if (!cookieModal.classList.contains('hidden')) closeCookieModal();
+            }
+        });
+
+        // 9. MODULE ASSISTANT SOS PLANTE (DIAGNOSTIC)
+        const sosData = {
+            jaunes: {
+                causeTitle: "Excès d'arrosage & asphyxie des racines",
+                causeDesc: "L'eau stagnante au fond du pot prive les poils absorbants d'oxygène. Les racines ne peuvent plus alimenter correctement le feuillage, provoquant le jaunissement des feuilles inférieures.",
+                solutionTitle: "Drainer le pot et espacer les apports d'eau",
+                solutionDesc: "Videz immédiatement la soucoupe, vérifiez que le pot possède des trous de drainage et attendez que les 3 premiers centimètres de terreau soient secs avant de réarroser."
+            },
+            brunes: {
+                causeTitle: "Air trop sec ou arrosage irrégulier",
+                causeDesc: "Lorsque l'air ambiant manque d'humidité (chauffage en hiver) ou que la plante subit de grands écarts d'arrosage, l'eau n'atteint plus l'extrémité du limbe des feuilles.",
+                solutionTitle: "Augmenter l'humidité ambiante",
+                solutionDesc: "Placez le pot sur une soucoupe remplie de billes d'argile humides, éloignez la plante des radiateurs et arrosez avec une eau non calcaire à température ambiante."
+            },
+            molles: {
+                causeTitle: "Stress hydrique (manque d'eau aigu)",
+                causeDesc: "Les cellules végétales manquent de pression interne (turgescence). La tige et les pétioles perdent leur rigidité et les feuilles s'affaissent vers le bas.",
+                solutionTitle: "Réhydrater progressivement par bassinage",
+                solutionDesc: "Plongez le pot dans une bassine d'eau tempérée pendant 15 minutes pour réhydrater toute la motte de terre, puis laissez bien égoutter avant de remettre en place."
+            },
+            etiolation: {
+                causeTitle: "Manque de lumière (étiolement)",
+                causeDesc: "La plante cherche désespérément une source lumineuse : ses entre-nœuds s'allongent anormalement, les tiges deviennent fines et les nouvelles feuilles sont plus petites et pâles.",
+                solutionTitle: "Rapprocher la plante d'une fenêtre lumineuse",
+                solutionDesc: "Déplacez la plante à moins d'un mètre d'une fenêtre bien exposée (en évitant le soleil brûlant direct derrière une vitre) et tournez le pot d'un quart de tour chaque semaine."
+            }
+        };
+
+        document.querySelectorAll('.symptom-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.symptom-btn').forEach(b => {
+                    b.className = 'symptom-btn p-4 rounded-2xl border-2 border-sage-200 dark:border-forest-800 bg-sage-50/70 dark:bg-forest-900/60 hover:border-emerald-400 text-left transition cursor-pointer';
+                });
+                btn.className = 'symptom-btn p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/90 dark:bg-forest-900 text-left transition shadow-sm cursor-pointer';
+
+                const info = sosData[btn.dataset.symptom];
+                if (info) {
+                    document.getElementById('sos-cause-title').textContent = info.causeTitle;
+                    document.getElementById('sos-cause-desc').textContent = info.causeDesc;
+                    document.getElementById('sos-solution-title').textContent = info.solutionTitle;
+                    document.getElementById('sos-solution-desc').textContent = info.solutionDesc;
+                }
+            });
+        });
+
+        // 10. QUIZ BOTANIQUE AMÉLIORÉ (8 QUESTIONS + CHRONO OPTIONNEL + RECORD LOCALSTORAGE + CONFETTIS)
+        const quizQuestions = [
+            {
+                q: "Quelle structure relie directement le limbe d'une feuille à un nœud de la tige ?",
+                options: ["Le pétiole", "Le collet", "La coiffe", "L'étamine"],
+                answer: 0,
+                explanation: "Exact ! Le pétiole est la petite tige souple qui rattache le limbe de la feuille au niveau d'un nœud."
+            },
+            {
+                q: "Comment appelle-t-on le segment de tige situé entre deux nœuds successifs ?",
+                options: ["Le bourgeon terminal", "L'entre-nœud", "Le rhizome", "Le limbe"],
+                answer: 1,
+                explanation: "Bravo ! L'entre-nœud est la portion de tige entre deux nœuds qui espace les étages de feuilles."
+            },
+            {
+                q: "Quel organe protège l'extrémité de la racine lorsqu'elle s'enfonce dans le sol ?",
+                options: ["Le pistil", "Le collet", "La coiffe", "Le bourgeon axillaire"],
+                answer: 2,
+                explanation: "Tout à fait ! La coiffe forme un capuchon lubrifié qui protège la pointe de croissance de la racine."
+            },
+            {
+                q: "Quelle zone marque la frontière entre le système caulinaire et le système radiculaire ?",
+                options: ["Le collet", "Le nœud apical", "Les poils absorbants", "Le limbe"],
+                answer: 0,
+                explanation: "Parfait ! Le collet est situé à la surface du sol et relie la tige aérienne aux racines souterraines."
+            },
+            {
+                q: "Quel est le rôle principal des poils absorbants du système radiculaire ?",
+                options: ["Produire le pollen", "Absorber l'eau et les sels minéraux du sol", "Réaliser la photosynthèse", "Attirer les insectes"],
+                answer: 1,
+                explanation: "Exactement ! Les poils absorbants démultiplient la surface d'absorption de l'eau et des minéraux."
+            },
+            {
+                q: "Quelle plante de notre herbier possède une tige carrée et se propage par rhizomes ?",
+                options: ["Le Tournesol", "L'Aloe Vera", "La Menthe Verte", "L'Olivier"],
+                answer: 2,
+                explanation: "Excellent ! La Menthe Verte (famille des Lamiaceae) se reconnaît à sa tige quadrangulaire et ses rhizomes."
+            },
+            {
+                q: "Dans quel substrat doit-on cultiver l'Orchidée Phalaenopsis ?",
+                options: ["Un terreau très argileux et détrempé", "Des écorces de pin calibrées sans terreau", "Du sable pur", "De la terre de jardin compacte"],
+                answer: 1,
+                explanation: "Bravo ! Plante épiphyte, l'Orchidée Phalaenopsis a besoin d'écorces de pin très aérées pour ses racines aériennes."
+            },
+            {
+                q: "Comment appelle-t-on l'allongement excessif des entre-nœuds dû à un manque de lumière ?",
+                options: ["La pollinisation", "La germination", "L'étiolement", "La photosynthèse"],
+                answer: 2,
+                explanation: "Parfait ! L'étiolement se produit lorsque la plante manque de lumière et étire ses tiges pour en chercher."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+        let answered = false;
+        let bestScore = CookieManager.canUsePreferences()
+            ? parseInt(localStorage.getItem('botanica_best_score') || '0', 10)
+            : 0;
+
+        // Chrono optionnel
+        let timerEnabled = false;
+        let timerInterval = null;
+        let secondsLeft = 15;
+
+        function updateBestScoreUI() {
+            document.getElementById('hero-best-score').textContent = `${bestScore}/8`;
+            document.getElementById('quiz-record-badge').textContent = `Record : ${bestScore}/8`;
+        }
+        updateBestScoreUI();
+
+        function toggleQuizTimer() {
+            timerEnabled = !timerEnabled;
+            const btn = document.getElementById('timer-toggle-btn');
+            const display = document.getElementById('timer-display');
+
+            if (timerEnabled) {
+                btn.classList.add('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950');
+                startQuestionTimer();
+            } else {
+                clearInterval(timerInterval);
+                btn.classList.remove('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950');
+                display.textContent = 'Chrono : OFF';
+            }
+        }
+
+        function startQuestionTimer() {
+            clearInterval(timerInterval);
+            if (!timerEnabled) return;
+            secondsLeft = 15;
+            document.getElementById('timer-display').textContent = `⏱️ ${secondsLeft}s`;
+
+            timerInterval = setInterval(() => {
+                secondsLeft--;
+                document.getElementById('timer-display').textContent = `⏱️ ${secondsLeft}s`;
+                if (secondsLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if (!answered) {
+                        handleAnswer(-1); // Temps écoulé
+                    }
+                }
+            }, 1000);
+        }
+
+        const qText = document.getElementById('quiz-question');
+        const qOptions = document.getElementById('quiz-options');
+        const qFeedback = document.getElementById('quiz-feedback');
+        const qNextBtn = document.getElementById('quiz-next-btn');
+        const qProgressText = document.getElementById('quiz-progress-text');
+        const qProgressBar = document.getElementById('quiz-progress-bar');
+        const qScoreBadge = document.getElementById('quiz-score-badge');
+
+        function loadQuizQuestion() {
+            answered = false;
+            qFeedback.classList.add('hidden');
+            qNextBtn.classList.add('hidden');
+
+            const current = quizQuestions[currentQIndex];
+            qProgressText.textContent = `Question ${currentQIndex + 1} sur ${quizQuestions.length}`;
+            qProgressBar.style.width = `${((currentQIndex + 1) / quizQuestions.length) * 100}%`;
+            qScoreBadge.textContent = `Score : ${score}`;
+            qText.textContent = current.q;
+
+            qOptions.innerHTML = '';
+            current.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-4 rounded-2xl bg-sage-50/70 dark:bg-forest-950 border-2 border-sage-200 dark:border-forest-800 hover:border-emerald-500 font-semibold text-slate-800 dark:text-cream-100 transition flex items-center justify-between cursor-pointer';
+                btn.innerHTML = `<span>${opt}</span>`;
+                btn.addEventListener('click', () => handleAnswer(idx));
+                qOptions.appendChild(btn);
+            });
+
+            if (timerEnabled) startQuestionTimer();
+        }
+
+        function handleAnswer(selectedIdx) {
+            if (answered) return;
+            answered = true;
+            clearInterval(timerInterval);
+
+            const current = quizQuestions[currentQIndex];
+            const allBtns = qOptions.querySelectorAll('button');
+
+            allBtns.forEach((b, idx) => {
+                b.disabled = true;
+                b.classList.remove('cursor-pointer', 'hover:border-emerald-500');
+                if (idx === current.answer) {
+                    b.className = 'w-full text-left p-4 rounded-2xl bg-emerald-100 dark:bg-emerald-950/90 border-2 border-emerald-600 font-bold text-emerald-950 dark:text-emerald-200 flex items-center justify-between';
+                    b.innerHTML += `<i class="ph-fill ph-check-circle text-emerald-600 dark:text-emerald-400 text-xl"></i>`;
+                } else if (idx === selectedIdx && selectedIdx !== current.answer) {
+                    b.className = 'w-full text-left p-4 rounded-2xl bg-rose-100 dark:bg-rose-950/80 border-2 border-rose-500 font-semibold text-rose-950 dark:text-rose-200 flex items-center justify-between';
+                    b.innerHTML += `<i class="ph-fill ph-x-circle text-rose-600 dark:text-rose-400 text-xl"></i>`;
+                } else {
+                    b.className = 'w-full text-left p-4 rounded-2xl bg-white/50 dark:bg-forest-950/40 border border-sage-200 dark:border-forest-800 text-slate-400 dark:text-cream-200/40 flex items-center justify-between';
+                }
+            });
+
+            if (selectedIdx === current.answer) {
+                score++;
+                qScoreBadge.textContent = `Score : ${score}`;
+                qFeedback.className = 'mt-6 p-4 rounded-2xl bg-emerald-100/80 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200 text-sm leading-relaxed';
+                qFeedback.textContent = current.explanation;
+            } else if (selectedIdx === -1) {
+                qFeedback.className = 'mt-6 p-4 rounded-2xl bg-amber-100/80 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800/70 text-amber-950 dark:text-amber-200 text-sm leading-relaxed';
+                qFeedback.textContent = `⏱️ Temps écoulé ! ${current.explanation}`;
+            } else {
+                qFeedback.className = 'mt-6 p-4 rounded-2xl bg-amber-100/80 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800/70 text-amber-950 dark:text-amber-200 text-sm leading-relaxed';
+                qFeedback.textContent = current.explanation;
+            }
+
+            qFeedback.classList.remove('hidden');
+
+            qNextBtn.querySelector('span').textContent = currentQIndex === quizQuestions.length - 1
+                ? "Voir mon résultat"
+                : "Question suivante";
+            qNextBtn.classList.remove('hidden');
+        }
+
+        qNextBtn.addEventListener('click', () => {
+            currentQIndex++;
+            if (currentQIndex < quizQuestions.length) {
+                loadQuizQuestion();
+            } else {
+                showQuizResults();
+            }
+        });
+
+        function launchConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.innerHTML = '';
+            const colors = ['#10b981', '#facc15', '#ec4899', '#38bdf8', '#a3e635'];
+
+            for (let i = 0; i < 42; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = `${Math.random() * 100}%`;
+                piece.style.top = `${-10 - Math.random() * 20}px`;
+                piece.style.backgroundColor = colors[i % colors.length];
+                piece.style.animationDelay = `${Math.random() * 0.7}s`;
+                container.appendChild(piece);
+            }
+        }
+
+        function showQuizResults() {
+            clearInterval(timerInterval);
+            if (score > bestScore) {
+                bestScore = score;
+                if (CookieManager.canUsePreferences()) {
+                    localStorage.setItem('botanica_best_score', String(bestScore));
+                    CookieManager.syncPersistentStorage();
+                }
+                updateBestScoreUI();
+            }
+
+            document.getElementById('quiz-active-view').classList.add('hidden');
+            const resultView = document.getElementById('quiz-result-view');
+            resultView.classList.remove('hidden');
+
+            document.getElementById('quiz-final-score').textContent = `Votre score : ${score} / ${quizQuestions.length}`;
+            document.getElementById('quiz-final-record').textContent = `Meilleur score sauvegardé : ${bestScore} / ${quizQuestions.length}`;
+
+            const rankBadge = document.getElementById('quiz-rank-badge');
+            const msgEl = document.getElementById('quiz-final-message');
+
+            if (score >= 7) {
+                rankBadge.innerHTML = `<i class="ph-fill ph-crown text-base"></i> Rang : Maître Botaniste`;
+                msgEl.textContent = "Score exceptionnel ! Vous maîtrisez parfaitement l'anatomie des plantes et les 10 espèces de l'herbier.";
+                launchConfetti();
+            } else if (score >= 5) {
+                rankBadge.innerHTML = `<i class="ph-fill ph-plant text-base"></i> Rang : Explorateur Végétal`;
+                msgEl.textContent = "Très beau résultat ! Vous connaissez déjà très bien l'organisation végétale.";
+                launchConfetti();
+            } else {
+                rankBadge.innerHTML = `<i class="ph-fill ph-seedling text-base"></i> Rang : Apprenti Jardinier`;
+                msgEl.textContent = "Bon début ! Entraînez-vous avec le Mode Révision sur le schéma anatomique puis retentez le défi.";
+            }
+        }
+
+        function restartQuiz() {
+            currentQIndex = 0;
+            score = 0;
+            document.getElementById('confetti-container').innerHTML = '';
+            document.getElementById('quiz-result-view').classList.add('hidden');
+            document.getElementById('quiz-active-view').classList.remove('hidden');
+            loadQuizQuestion();
+        }
+
+        // Initialisation globale
+        initCookieBanner();
+        updateFavoritesCounters();
+        document.getElementById('compare-count').textContent = compareIds.length;
+        pickRandomPlantOfDay();
+        renderPlants();
+        loadQuizQuestion();
+    </script>
+</body>
+</html>
